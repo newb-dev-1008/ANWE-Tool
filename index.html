@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animal-Centred Wildfire Recovery — Decision Support Prototype</title>
+  <meta name="description" content="Decision support prototype for comparing post-fire habitat-recovery options through an animal-welfare lens. FICTIONAL ILLUSTRATIVE DATA — not validated." />
+  <!-- Open Graph -->
+  <meta property="og:title" content="Animal-Centred Wildfire Recovery DST" />
+  <meta property="og:description" content="Fictional prototype for ethics of AI assignment. Not validated." />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Inline critical warning style so it renders even if CSS fails -->
+  <style>
+    .global-banner {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(220,38,38,0.92);
+      color: white;
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 16px;
+      z-index: 9999;
+      letter-spacing: 0.03em;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Global synthetic-data banner -->
+<div class="global-banner" id="global-banner" role="alert" aria-live="polite">
+  ⚠️ PROTOTYPE — ALL DATA IS SYNTHETIC &amp; ILLUSTRATIVE — NOT VALIDATED — DO NOT USE FOR REAL LAND-MANAGEMENT DECISIONS
+</div>
+
+<div id="app">
+
+  <!-- ══ SIDEBAR ══════════════════════════════════════════ -->
+  <aside id="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="sidebar-logo">
+      <div class="logo-icon" aria-hidden="true">🔥</div>
+      <h2>Wildfire Recovery<br>Decision Support</h2>
+      <p>Animal-Centred Prototype v0.1</p>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Screen navigation">
+      <div class="nav-section-label">Screens</div>
+      <button class="nav-item active" onclick="showScreen('case-overview')" aria-current="page" id="nav-case-overview">
+        <span class="nav-icon" aria-hidden="true">📋</span>
+        Case Overview
+      </button>
+      <button class="nav-item" onclick="showScreen('welfare-context')" id="nav-welfare-context">
+        <span class="nav-icon" aria-hidden="true">🐾</span>
+        Animal Welfare Context
+      </button>
+      <button class="nav-item" onclick="showScreen('compare-pathways')" id="nav-compare-pathways">
+        <span class="nav-icon" aria-hidden="true">⚖️</span>
+        Compare Pathways
+      </button>
+      <button class="nav-item" onclick="showScreen('expert-review')" id="nav-expert-review">
+        <span class="nav-icon" aria-hidden="true">📝</span>
+        Expert Review &amp; Record
+      </button>
+
+      <div class="nav-section-label" style="margin-top: 12px;">Tools</div>
+      <button class="nav-item" onclick="showScreen('justice-analysis')" id="nav-justice-analysis">
+        <span class="nav-icon" aria-hidden="true">⚖️</span>
+        Multispecies Justice
+      </button>
+      <button class="nav-item" onclick="showScreen('evaluation')" id="nav-evaluation">
+        <span class="nav-icon" aria-hidden="true">✅</span>
+        Evaluation Checklist
+        <span class="nav-badge">12</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="synthetic-badge" role="status">
+        ⚠️ SYNTHETIC DATA<br>
+        <span style="font-weight:400;font-size:0.65rem;">Sierra Morena · Fictional · 2026</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ═════════════════════════════════════════════ -->
+  <main id="main" role="main">
+
+    <!-- Header -->
+    <header id="header">
+      <button id="hamburger" onclick="toggleSidebar()" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <div class="header-breadcrumb" aria-label="Breadcrumb">
+        <span id="breadcrumb-root">Wildfire Recovery DST</span>
+        <span aria-hidden="true">›</span>
+        <span id="breadcrumb-current">Case Overview</span>
+      </div>
+      <div class="header-actions">
+        <span class="badge badge-synthetic" aria-label="All data is illustrative and synthetic">
+          🧪 Illustrative Data
+        </span>
+        <button class="btn btn-secondary btn-sm" onclick="exportRecord()" aria-label="Export decision record as JSON">
+          ⬇ Export Record
+        </button>
+      </div>
+    </header>
+
+    <!-- Page content -->
+    <div id="page-content">
+
+      <!-- ══════════════════════════════════════════════════
+           SCREEN A: CASE OVERVIEW
+      ══════════════════════════════════════════════════ -->
+      <section id="screen-case-overview" class="screen active fade-in" aria-labelledby="co-heading">
+
+        <div class="section-heading">
+          <div>
+            <h1 id="co-heading">📋 Case Overview</h1>
+            <p style="color:var(--clr-text-muted);font-size:0.875rem;margin-top:4px;">
+              Context, evidence sources, limitations and a schematic habitat diagram
+            </p>
+          </div>
+        </div>
+
+        <!-- Scenario alert -->
+        <div class="callout callout-danger" role="alert">
+          <span class="callout-icon" aria-hidden="true">🧪</span>
+          <div>
+            <strong>FICTIONAL ILLUSTRATIVE SCENARIO</strong> — "Sierra Morena Compounding Fires, Southern Spain"<br>
+            <span style="font-size:0.8rem;">All data, species records, fire extents, legal designations and citations are synthetic and invented for demonstration purposes. 
+            Do NOT use for real land-management decisions. See <em>Limitations</em> section below.</span>
+          </div>
+        </div>
+
+        <!-- Stats row -->
+        <div class="stat-grid" style="margin: 24px 0;" aria-label="Key fire statistics">
+          <div class="stat-card">
+            <div class="stat-value">~18k</div>
+            <div class="stat-label">Hectares burned</div>
+            <div class="stat-note">⚠️ Illustrative estimate</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">2</div>
+            <div class="stat-label">Consecutive fire seasons</div>
+            <div class="stat-note">2022 + 2023 (fictional)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">11mo</div>
+            <div class="stat-label">Between fire events</div>
+            <div class="stat-note">Historic return: 30 yr (fictional)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">6</div>
+            <div class="stat-label">Focal species / groups</div>
+            <div class="stat-note">Illustrative selection</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">3</div>
+            <div class="stat-label">Recovery options</div>
+            <div class="stat-note">Compared in Screen C</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- Description card -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon" style="background:rgba(249,115,22,0.15);" aria-hidden="true">🔥</div>
+              <div>
+                <div class="card-title">Fire Scenario</div>
+                <div class="card-subtitle">Multi-season compounding fires (fictional)</div>
+              </div>
+            </div>
+            <p style="font-size:0.875rem;line-height:1.7;color:var(--clr-text-muted);">
+              Two consecutive wildfire seasons burned approximately <strong style="color:var(--clr-text)">18 000 ha</strong>
+              of Mediterranean shrubland, montane woodland and riparian corridor across a 
+              fictional protected area in southern Spain. Back-to-back fires prevented 
+              full post-fire recovery between seasons, disrupting succession dynamics and 
+              fragmenting habitat patches critical to several threatened species.
+            </p>
+            <div style="margin-top:16px;">
+              <div class="pill-group">
+                <span class="pill">🌿 Maquis/garrigue</span>
+                <span class="pill">🌲 Montane woodland</span>
+                <span class="pill">💧 Riparian forest</span>
+                <span class="pill">🪨 Rocky outcrops</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Habitat schematic -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon" style="background:rgba(13,148,136,0.15);" aria-hidden="true">🗺️</div>
+              <div>
+                <div class="card-title">Schematic Habitat Diagram</div>
+                <div class="card-subtitle">⚠️ Illustrative — not real GIS data</div>
+              </div>
+            </div>
+            <canvas id="habitat-map" class="map-canvas" width="480" height="200" 
+                    aria-label="Schematic illustration of burned (red/orange) and unburned (green) habitat zones with species refugia markers. Data is illustrative only."
+                    role="img"></canvas>
+            <p style="font-size:0.7rem;color:var(--clr-text-faint);margin-top:8px;text-align:center;">
+              ⚠️ Schematic illustration only — not real GIS or satellite data.
+              Satellite imagery does NOT directly measure animal welfare or presence.
+            </p>
+          </div>
+        </div>
+
+        <!-- Evidence sources -->
+        <div class="card" style="margin-top:16px;">
+          <div class="card-header">
+            <div class="card-icon" style="background:rgba(37,99,235,0.15);" aria-hidden="true">📊</div>
+            <div>
+              <div class="card-title">Evidence Sources</div>
+              <div class="card-subtitle">Source, date, confidence and limitations — for all data used</div>
+            </div>
+          </div>
+          <div id="evidence-sources-table" role="region" aria-label="Evidence sources table"></div>
+        </div>
+
+        <!-- Limitations -->
+        <div class="card" style="margin-top:16px;">
+          <div class="card-header">
+            <div class="card-icon" style="background:rgba(220,38,38,0.15);" aria-hidden="true">⚠️</div>
+            <div>
+              <div class="card-title">Key Limitations &amp; Caveats</div>
+              <div class="card-subtitle">All must be considered before using tool outputs</div>
+            </div>
+          </div>
+          <ul id="limitations-list" role="list" style="list-style:none;display:flex;flex-direction:column;gap:8px;"></ul>
+        </div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════════════
+           SCREEN B: ANIMAL WELFARE CONTEXT
+      ══════════════════════════════════════════════════ -->
+      <section id="screen-welfare-context" class="screen" aria-labelledby="wc-heading">
+
+        <div class="section-heading">
+          <div>
+            <h1 id="wc-heading">🐾 Animal Welfare Context</h1>
+            <p style="color:var(--clr-text-muted);font-size:0.875rem;margin-top:4px;">
+              Potential effects on food, water, shelter, breeding and movement for each focal species/group.
+              Evidence types: <span class="badge ev-observation">Observation</span>
+              <span class="badge ev-inference">Inference</span>
+              <span class="badge ev-unknown">Unknown</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="callout callout-info">
+          <span class="callout-icon" aria-hidden="true">ℹ️</span>
+          <div>
+            <strong>Interpretation guide:</strong> Welfare concerns are assessed across five domains (food, water, shelter, breeding, movement).
+            Evidence types distinguish direct <em>observation</em>, informed <em>inference</em> from ecological principles, and <em>unknown</em> gaps.
+            Absence of a record does <strong>NOT</strong> confirm species absence.
+            Click any species card or welfare cell for detail.
+          </div>
+        </div>
+
+        <!-- Species selector tabs -->
+        <div class="tabs" role="tablist" aria-label="Focal species" id="species-tabs"></div>
+
+        <!-- Welfare detail panel -->
+        <div id="welfare-detail-panel" role="tabpanel"></div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════════════
+           SCREEN C: COMPARE PATHWAYS
+      ══════════════════════════════════════════════════ -->
+      <section id="screen-compare-pathways" class="screen" aria-labelledby="cp-heading">
+
+        <div class="section-heading">
+          <div>
+            <h1 id="cp-heading">⚖️ Compare Recovery Pathways</h1>
+            <p style="color:var(--clr-text-muted);font-size:0.875rem;margin-top:4px;">
+              Three plausible options — benefits, harms, affected stakeholders, evidence, uncertainty and field checks
+            </p>
+          </div>
+        </div>
+
+        <div class="callout callout-warning">
+          <span class="callout-icon" aria-hidden="true">⚠️</span>
+          <div>
+            <strong>No overall score is shown.</strong> Displaying a single composite score would conceal severe harm to smaller or less-represented species groups.
+            Review each option's per-species welfare impacts and ethics flags before advising a decision.
+          </div>
+        </div>
+
+        <!-- View toggle -->
+        <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="setCompareView('side-by-side')" id="view-side-btn">⊞ Side by Side</button>
+          <button class="btn btn-secondary btn-sm" onclick="setCompareView('stacked')" id="view-stack-btn">☰ Stacked</button>
+          <button class="btn btn-secondary btn-sm" onclick="setCompareView('species')" id="view-species-btn">🐾 By Species Impact</button>
+        </div>
+
+        <div id="compare-container"></div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════════════
+           SCREEN D: EXPERT REVIEW
+      ══════════════════════════════════════════════════ -->
+      <section id="screen-expert-review" class="screen" aria-labelledby="er-heading">
+
+        <div class="section-heading">
+          <div>
+            <h1 id="er-heading">📝 Expert Review &amp; Decision Record</h1>
+            <p style="color:var(--clr-text-muted);font-size:0.875rem;margin-top:4px;">
+              Editable notes · Challenge / override fields · Unresolved risks · Human decision rationale
+            </p>
+          </div>
+        </div>
+
+        <div class="callout callout-warning">
+          <span class="callout-icon" aria-hidden="true">🧑‍💼</span>
+          <div>
+            <strong>Human decision authority:</strong> This tool does NOT automatically issue or execute management instructions.
+            All outputs require expert review. Use this screen to record challenges, overrides, unresolved concerns and a rationale.
+            The completed record can be exported for audit purposes.
+          </div>
+        </div>
+
+        <div id="expert-review-form"></div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════════════
+           SCREEN E: MULTISPECIES JUSTICE
+      ══════════════════════════════════════════════════ -->
+      <section id="screen-justice-analysis" class="screen" aria-labelledby="mj-heading">
+
+        <div class="section-heading">
+          <div>
+            <h1 id="mj-heading">⚖️ Multispecies Justice Analysis</h1>
+            <p style="color:var(--clr-text-muted);font-size:0.875rem;margin-top:4px;">
+              Who may benefit? Who may be harmed? Whose interests are missing or underweighted?
+            </p>
+          </div>
+        </div>
+
+        <div class="callout callout-info">
+          <span class="callout-icon" aria-hidden="true">ℹ️</span>
+          <div>
+            Multispecies Justice asks us to look beyond charismatic flagship species and consider the 
+            full range of affected beings — including invertebrates, soil biota and species not yet 
+            surveyed. A high "risk of omission" flag means these groups are at risk of being 
+            <em>systematically excluded</em> from planning, not that they are necessarily absent.
+          </div>
+        </div>
+
+        <div id="justice-table"></div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════════════
+           SCREEN F: EVALUATION CHECKLIST
+      ══════════════════════════════════════════════════ -->
+      <section id="screen-evaluation" class="screen" aria-labelledby="ev-heading">
+
+        <div class="section-heading">
+          <div>
+            <h1 id="ev-heading">✅ Evaluation Checklist</h1>
+            <p style="color:var(--clr-text-muted);font-size:0.875rem;margin-top:4px;">
+              Evidence traceability · Uncertainty · Species representation · Human oversight · Misleading recommendations
+            </p>
+          </div>
+        </div>
+
+        <div class="callout callout-warning">
+          <span class="callout-icon" aria-hidden="true">⚠️</span>
+          <div>
+            This checklist reflects the <strong>current prototype</strong> state only. A reviewer can tick/override items 
+            and record disagreements below. The tool has <strong>not been independently validated</strong> and 
+            does not claim to improve animal welfare outcomes.
+          </div>
+        </div>
+
+        <div id="eval-checklist"></div>
+
+        <!-- Reviewer override section -->
+        <div class="decision-box" style="margin-top:24px;">
+          <h3 style="margin-bottom:16px;">🔍 Reviewer Disagreements / Overrides</h3>
+          <div class="form-group">
+            <label class="form-label" for="reviewer-checklist-notes">Record any items you disagree with or flag as incomplete:</label>
+            <textarea id="reviewer-checklist-notes" rows="5" placeholder="e.g. 'chk-6: Pollinator welfare listed as present but the welfare assessment lacks quantitative data — should be marked Partial, not Passed.'"></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="saveChecklistNotes()" aria-label="Save reviewer notes">💾 Save Reviewer Notes</button>
+        </div>
+
+      </section>
+
+    </div><!-- /page-content -->
+  </main>
+</div><!-- /app -->
+
+<!-- ══ WELFARE DETAIL MODAL ══════════════════════════════ -->
+<div class="overlay" id="welfare-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span id="modal-species-emoji" aria-hidden="true" style="font-size:2rem;"></span>
+      <div>
+        <h2 id="modal-title" style="font-size:1.1rem;"></h2>
+        <p id="modal-subtitle" style="font-size:0.8rem;color:var(--clr-text-muted);"></p>
+      </div>
+      <button class="modal-close" onclick="closeWelfareModal()" aria-label="Close welfare detail modal">×</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ══ SCRIPTS ════════════════════════════════════════════ -->
+<script src="data/scenario.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
