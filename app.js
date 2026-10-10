@@ -20,6 +20,7 @@ const STATE = {
   activeSpeciesTab: 0,
   compareView: "side-by-side",
   expertRecord: {
+    supportingEvidence: "",
     reviewer: "",
     date: new Date().toISOString().split("T")[0],
     preferredOption: "",
@@ -137,7 +138,8 @@ function showScreen(screenId) {
 
   // Update breadcrumb
   const labels = {
-    "case-overview": "Case Overview",
+    "case-overview": "Map & environmental context",
+    "restoration-summary": "Restoration summary",
     "welfare-context": "Animal Welfare Context",
     "compare-pathways": "Compare Pathways",
     "expert-review": "Expert Review & Record",
@@ -148,6 +150,8 @@ function showScreen(screenId) {
   if (bc) bc.textContent = labels[screenId] || screenId;
 
   STATE.currentScreen = screenId;
+  if (target) target.focus({preventScroll: true});
+  if (screenId === "case-overview" && typeof areaMap !== "undefined" && areaMap) requestAnimationFrame(() => areaMap.invalidateSize());
 
   // Close sidebar on mobile
   if (window.innerWidth <= 768) {
@@ -186,8 +190,8 @@ function renderCaseOverview() {
         <td><span class="badge badge-neutral">${escapeHtml(src.type)}</span></td>
         <td>${escapeHtml(src.date)}</td>
         <td>
-          <span class="badge ${src.confidence.toLowerCase().includes("very low") ? "badge-high" 
-            : src.confidence.toLowerCase().includes("low") ? "badge-moderate" 
+          <span class="badge ${src.confidence.toLowerCase().includes("very low") ? "badge-high"
+            : src.confidence.toLowerCase().includes("low") ? "badge-moderate"
             : "badge-low"}">${escapeHtml(src.confidence)}</span>
         </td>
         <td style="font-size:0.8rem;color:var(--clr-text-muted);max-width:280px;">${escapeHtml(src.limitations)}</td>
@@ -231,6 +235,7 @@ function drawHabitatMap() {
   const canvas = document.getElementById("habitat-map");
   if (!canvas || !canvas.getContext) return;
   const ctx = canvas.getContext("2d");
+  if (!ctx) return;
   const W = canvas.width, H = canvas.height;
 
   // Background
@@ -282,7 +287,7 @@ function drawHabitatMap() {
   // Species refugia markers (coarse — no precise GPS)
   const refugia = [
     { x: 0.62, y: 0.2, emoji: "🐆", label: "Lynx refugium" },
-    { x: 0.8, y: 0.6, emoji: "🐢", label: "Tortoise refuge" },
+    { x: 0.8, y: 0.6, emoji: "🦎", label: "Lizard refuge" },
     { x: 0.5, y: 0.72, emoji: "🐸", label: "Amphibian pool" },
     { x: 0.7, y: 0.3, emoji: "🦅", label: "Raptor nest zone" },
   ];
@@ -459,7 +464,9 @@ function renderEvBadge(type) {
    WELFARE MODAL
 ═══════════════════════════════════════════════════════════ */
 
+let modalReturnFocus;
 function openWelfareModal(speciesId, domain) {
+  modalReturnFocus = document.activeElement;
   const sp = SCENARIO.focalSpecies.find((s) => s.id === speciesId);
   if (!sp) return;
   const dw = sp.welfareContext[domain];
@@ -499,7 +506,7 @@ function openWelfareModal(speciesId, domain) {
       <span class="callout-icon" aria-hidden="true">⚠️</span>
       <div style="font-size:0.8rem;">
         ${escapeHtml(sp.note)}<br>
-        Evidence type <em>${escapeHtml(dw.evidenceType)}</em> — 
+        Evidence type <em>${escapeHtml(dw.evidenceType)}</em> —
         ${dw.evidenceType.toLowerCase().includes("observation")
           ? "Based on illustrative field records. Sample size insufficient for population inference."
           : dw.evidenceType.toLowerCase().includes("inference")
@@ -514,7 +521,10 @@ function openWelfareModal(speciesId, domain) {
 }
 
 function closeWelfareModal() {
-  document.getElementById("welfare-modal").classList.remove("open");
+  const modal = document.getElementById("welfare-modal");
+  if (!modal.classList.contains("open")) return;
+  modal.classList.remove("open");
+  if (modalReturnFocus) modalReturnFocus.focus();
 }
 
 function closeModal(e) {
@@ -593,13 +603,14 @@ function renderSideBySide(container) {
       </div>
       <div class="option-body">
         <p style="font-size:0.8rem;color:var(--clr-text-muted);line-height:1.6;margin-bottom:12px;">${escapeHtml(opt.description)}</p>
-        
+
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
           <span class="pill">⏱ ${escapeHtml(opt.timeframe)}</span>
           <span class="pill">💰 ${escapeHtml(opt.cost)}</span>
           <span class="pill">🔧 ${escapeHtml(opt.managementIntensity)} intensity</span>
         </div>
 
+        <div class="callout callout-warning"><div><strong>When inappropriate:</strong> ${escapeHtml(opt.inappropriate)}<br><strong>Review:</strong> ${escapeHtml(opt.reviewRequired)}</div></div>
         <!-- Benefits -->
         <details open>
           <summary style="cursor:pointer;font-size:0.8rem;font-weight:700;color:var(--clr-green);margin-bottom:8px;list-style:none;">
@@ -685,7 +696,7 @@ function renderStacked(container) {
           <div class="card-subtitle">${escapeHtml(opt.timeframe)} · ${escapeHtml(opt.cost)} · ${escapeHtml(opt.managementIntensity)} intensity</div>
         </div>
       </div>
-      <p style="font-size:0.875rem;line-height:1.7;color:var(--clr-text-muted);">${escapeHtml(opt.description)}</p>
+      <p style="font-size:0.875rem;line-height:1.7;color:var(--clr-text-muted);">${escapeHtml(opt.description)}</p><p>${escapeHtml(opt.inappropriate)} ${escapeHtml(opt.reviewRequired)}</p>
       <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;">
         <div style="flex:1;min-width:200px;">
           <div style="font-size:0.75rem;font-weight:700;color:var(--clr-green);margin-bottom:6px;">✅ Benefits</div>
@@ -824,7 +835,7 @@ function renderExpertReview() {
             <span style="color:var(--clr-text-faint);font-weight:400;"> (Be specific — animal welfare, evidence, feasibility, etc.)</span>
           </label>
           <textarea id="decision-rationale" rows="6"
-                    placeholder="e.g. Option C is preferred because it is the only option that directly addresses the Mallorcan Midwife Toad breeding pool risk via water supplementation. The Iberian Lynx starvation risk is partially mitigated by the prey supplementation element. The mosaic structure also benefits pollinators which are systematically overlooked in standard fire-recovery plans..."
+                    placeholder="State why a strategy is preferred or why the decision is deferred. Compare alternatives and identify evidence needed before action."
                     oninput="STATE.expertRecord.rationale=this.value">${escapeHtml(STATE.expertRecord.rationale)}</textarea>
         </div>
       </div>
@@ -842,14 +853,14 @@ function renderExpertReview() {
       <div class="callout callout-info" style="margin-bottom:16px;">
         <span class="callout-icon" aria-hidden="true">ℹ️</span>
         <div style="font-size:0.8rem;">
-          This tool is a decision-support prototype, not an authority. If your expert judgement or field knowledge 
+          This tool is a decision-support prototype, not an authority. If your expert judgement or field knowledge
           contradicts an assessment, record it here. Overrides are part of the audit trail.
         </div>
       </div>
       <div class="form-group">
         <label class="form-label" for="challenged-items">Challenged assessments</label>
         <textarea id="challenged-items" rows="4"
-                  placeholder="e.g. 'Option A welfare for Hermann's Tortoise rated POSITIVE medium-term, but local surveys in 2021 showed tortoise population was already severely fragmented before these fires — the 3–5 year timeline is likely optimistic. Override: UNCERTAIN.'"
+                  placeholder="Identify an individual assumption, explain your objection, and record what evidence could resolve it."
                   oninput="STATE.expertRecord.challengedItems=this.value">${escapeHtml(STATE.expertRecord.challengedItems)}</textarea>
       </div>
       <div class="form-group">
@@ -872,7 +883,7 @@ function renderExpertReview() {
       <div class="form-group">
         <label class="form-label" for="unresolved-risks">List unresolved risks that must be addressed before implementation:</label>
         <textarea id="unresolved-risks" rows="4"
-                  placeholder="e.g. '1. Rabbit restocking pathogen risk (RHD) — vet biosecurity assessment required before Option B can proceed.&#10;2. Mallorcan Midwife Toad breeding pool water quality — urgent independent survey needed.&#10;3. Traditional land-user consultation gap — no Indigenous/traditional ecological knowledge holders have been identified or consulted.'"
+                  placeholder="Record missing surveys, water-quality concerns, disturbance risks and consultation needs that must be resolved before action."
                   oninput="STATE.expertRecord.unresolvedRisks=this.value">${escapeHtml(STATE.expertRecord.unresolvedRisks)}</textarea>
       </div>
     </div>
@@ -894,26 +905,31 @@ function renderExpertReview() {
       </div>
     </div>
 
+    <div class="card form-group">
+      <label class="form-label" for="supporting-evidence">Supporting evidence (source, date, limitations; reasons for rejecting alternatives)</label>
+      <textarea id="supporting-evidence" rows="4" oninput="STATE.expertRecord.supportingEvidence=this.value">${escapeHtml(STATE.expertRecord.supportingEvidence)}</textarea>
+    </div>
     <!-- Sign-off and export -->
     <div class="decision-box">
-      <h3 style="margin-bottom:12px;">✍️ Expert Sign-Off</h3>
+      <h3 style="margin-bottom:12px;">Human review · local demonstration record</h3>
       <div class="callout callout-danger" style="margin-bottom:16px;">
         <span class="callout-icon" aria-hidden="true">⚠️</span>
         <div style="font-size:0.8rem;">
-          By signing off, you confirm that: (1) you have reviewed the tool's assessments critically; 
-          (2) you take responsibility for the decision rationale recorded above; 
-          (3) you understand this is a <strong>prototype with unverified synthetic data</strong> and 
-          the tool has NOT been validated for this or any use case; 
+          When saving this demonstration assessment, record that: (1) you have reviewed the tool's assessments critically;
+          (2) you take responsibility for the decision rationale recorded above;
+          (3) you understand this is a <strong>prototype with unverified synthetic data</strong> and
+          the tool has NOT been validated for this or any use case;
           (4) management instructions will NOT be issued automatically from this record.
         </div>
       </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
         <button class="btn btn-primary" onclick="saveExpertRecord()" aria-label="Save expert decision record">
-          💾 Save Record
+          💾 Save locally
         </button>
         <button class="btn btn-secondary" onclick="exportRecord()" aria-label="Export decision record as JSON file">
           ⬇ Export as JSON
         </button>
+        <button class="btn btn-secondary" onclick="viewSummary()">View restoration summary</button>
         <button class="btn btn-danger" onclick="clearRecord()" aria-label="Clear all entered review data">
           🗑 Clear Record
         </button>
@@ -923,22 +939,18 @@ function renderExpertReview() {
 }
 
 function saveExpertRecord() {
-  STATE.expertRecord.savedAt = new Date().toISOString();
-  const status = document.getElementById("save-status");
-  if (status) {
-    status.textContent = "✓ Record saved at " + new Date().toLocaleTimeString();
-    status.style.color = "var(--clr-green)";
-  }
+  persistLocalRecord();
 }
 
 function clearRecord() {
   if (!confirm("Clear all review data? This cannot be undone.")) return;
   STATE.expertRecord = {
-    reviewer: "", date: new Date().toISOString().split("T")[0],
+    supportingEvidence: "", reviewer: "", date: new Date().toISOString().split("T")[0],
     preferredOption: "", rationale: "", challengedItems: "",
     unresolvedRisks: "", additionalNotes: "", overriddenAssessments: "",
     signedOff: false, savedAt: null,
   };
+  try { localStorage.removeItem(RECORD_KEY); } catch {}
   renderExpertReview();
 }
 
@@ -1006,23 +1018,23 @@ function renderJusticeTable() {
         <div class="callout callout-danger">
           <span class="callout-icon" aria-hidden="true">🐝</span>
           <div>
-            <strong>Pollinators and soil biota</strong> have a VERY HIGH risk of omission — they are almost never 
-            included in fire-recovery plans despite experiencing severe direct impacts. Including them here 
+            <strong>Pollinators and soil biota</strong> have a VERY HIGH risk of omission — they are almost never
+            included in fire-recovery plans despite experiencing severe direct impacts. Including them here
             reflects Multispecies Justice principles.
           </div>
         </div>
         <div class="callout callout-warning" style="margin-top:8px;">
           <span class="callout-icon" aria-hidden="true">🐸</span>
           <div>
-            <strong>Mallorcan Midwife Toad</strong> has a HIGH risk of omission due to its cryptic aquatic larval stage
+            <strong>Iberian Midwife Toad</strong> has a HIGH risk of omission due to its cryptic aquatic larval stage
             being invisible in standard visual surveys. This highlights a systematic data gap.
           </div>
         </div>
         <div class="callout callout-info" style="margin-top:8px;">
           <span class="callout-icon" aria-hidden="true">🔍</span>
           <div>
-            <strong>Future / undetected species:</strong> Absence of biodiversity records must NEVER be treated as 
-            proof of species absence. Any real-world application of this tool must include a systematic 
+            <strong>Future / undetected species:</strong> Absence of biodiversity records must NEVER be treated as
+            proof of species absence. Any real-world application of this tool must include a systematic
             assessment of potential undetected biodiversity.
           </div>
         </div>
@@ -1052,7 +1064,7 @@ function renderEvaluationChecklist() {
             <div class="check-label">${escapeHtml(item.item)}</div>
             <div class="check-note">${escapeHtml(item.notes)}</div>
           </div>
-          <button class="btn btn-ghost btn-sm" 
+          <button class="btn btn-ghost btn-sm"
                   onclick="toggleChecklistItem('${escapeHtml(item.id)}', ${isPass})"
                   aria-label="${isPass ? "Mark as failed" : "Mark as passed"}: ${escapeHtml(item.item)}"
                   style="flex-shrink:0;margin-left:8px;">
@@ -1076,7 +1088,7 @@ function renderEvaluationChecklist() {
   }).join("");
 
   const total = SCENARIO.evaluationChecklist.length;
-  const passed = SCENARIO.evaluationChecklist.filter((i) => 
+  const passed = SCENARIO.evaluationChecklist.filter((i) =>
     STATE.checklistOverrides[i.id] !== undefined ? STATE.checklistOverrides[i.id] : i.passed
   ).length;
 
@@ -1089,12 +1101,12 @@ function renderEvaluationChecklist() {
         </div>
         <div style="flex:1;">
           <div class="progress-bar">
-            <div class="progress-fill" style="width:${(passed/total*100).toFixed(0)}%;background:${passed===total ? 'var(--clr-green)' : 'var(--clr-yellow)'};" 
-                 role="progressbar" aria-valuenow="${passed}" aria-valuemin="0" aria-valuemax="${total}" 
+            <div class="progress-fill" style="width:${(passed/total*100).toFixed(0)}%;background:${passed===total ? 'var(--clr-green)' : 'var(--clr-yellow)'};"
+                 role="progressbar" aria-valuenow="${passed}" aria-valuemin="0" aria-valuemax="${total}"
                  aria-label="${passed} of ${total} checklist items passed"></div>
           </div>
           <div style="font-size:0.75rem;color:var(--clr-text-faint);margin-top:4px;">
-            Note: "Passed" here means the prototype satisfies the criterion in its current state. 
+            Note: "Passed" here means the prototype satisfies the criterion in its current state.
             It does NOT mean the tool has been externally validated.
           </div>
         </div>
@@ -1108,7 +1120,7 @@ function toggleChecklistItem(id, currentPass) {
   renderEvaluationChecklist();
 }
 
-function saveChecklistNotes() {
+function saveChecklistNotes(event) {
   STATE.checklistReviewerNotes = document.getElementById("reviewer-checklist-notes")?.value || "";
   const btn = event.target;
   const orig = btn.textContent;
@@ -1124,7 +1136,12 @@ function saveChecklistNotes() {
 function exportRecord() {
   const record = {
     exportedAt: new Date().toISOString(),
-    toolVersion: "0.1-prototype",
+    toolVersion: "0.2-prototype",
+    recordStatus: "Local demonstration draft; no verified sign-off or authority approval",
+    geography: DEMO_GEO,
+    evidenceSources: SCENARIO.caseOverview.evidenceSources,
+    restorationAlternatives: SCENARIO.recoveryPathways,
+    restorationSummary: restorationSummary(),
     dataStatus: "SYNTHETIC / ILLUSTRATIVE — NOT VERIFIED",
     scenario: {
       id: SCENARIO.meta.id,
@@ -1153,6 +1170,11 @@ function exportRecord() {
 ═══════════════════════════════════════════════════════════ */
 
 document.addEventListener("keydown", (e) => {
+  const modal = document.getElementById("welfare-modal");
+  if (e.key === "Tab" && modal.classList.contains("open")) {
+    e.preventDefault();
+    modal.querySelector(".modal-close").focus();
+  }
   // Escape closes modal
   if (e.key === "Escape") closeWelfareModal();
 });
@@ -1162,6 +1184,7 @@ document.addEventListener("keydown", (e) => {
 ═══════════════════════════════════════════════════════════ */
 
 function init() {
+  restoreLocalRecord();
   // Render case overview (loaded on start)
   renderCaseOverview();
   // Render welfare context (pre-render)

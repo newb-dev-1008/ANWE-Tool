@@ -6,8 +6,9 @@
   <title>Animal-Centred Wildfire Recovery — Decision Support Prototype</title>
   <meta name="description" content="Decision support prototype for comparing post-fire habitat-recovery options through an animal-welfare lens. FICTIONAL ILLUSTRATIVE DATA — not validated." />
   <!-- Open Graph -->
-  <meta property="og:title" content="Animal-Centred Wildfire Recovery DST" />
+  <meta property="og:title" content="Animal-Centred ANWE" />
   <meta property="og:description" content="Fictional prototype for ethics of AI assignment. Not validated." />
+  <link rel="stylesheet" href="vendor/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
   <!-- Inline critical warning style so it renders even if CSS fails -->
   <style>
@@ -28,7 +29,7 @@
 
 <!-- Global synthetic-data banner -->
 <div class="global-banner" id="global-banner" role="alert" aria-live="polite">
-  ⚠️ PROTOTYPE — ALL DATA IS SYNTHETIC &amp; ILLUSTRATIVE — NOT VALIDATED — DO NOT USE FOR REAL LAND-MANAGEMENT DECISIONS
+  PROTOTYPE — ECOLOGICAL DATA &amp; ASSESSMENTS ARE ILLUSTRATIVE — NOT VALIDATED FOR LAND-MANAGEMENT DECISIONS
 </div>
 
 <div id="app">
@@ -37,15 +38,15 @@
   <aside id="sidebar" role="navigation" aria-label="Main navigation">
     <div class="sidebar-logo">
       <div class="logo-icon" aria-hidden="true">🔥</div>
-      <h2>Wildfire Recovery<br>Decision Support</h2>
-      <p>Animal-Centred Prototype v0.1</p>
+      <h2>ANWE<br>Restoration workspace</h2>
+      <p>Animal welfare · Ecosystem restoration</p>
     </div>
 
     <nav class="sidebar-nav" aria-label="Screen navigation">
       <div class="nav-section-label">Screens</div>
       <button class="nav-item active" onclick="showScreen('case-overview')" aria-current="page" id="nav-case-overview">
         <span class="nav-icon" aria-hidden="true">📋</span>
-        Case Overview
+        Map & environmental context
       </button>
       <button class="nav-item" onclick="showScreen('welfare-context')" id="nav-welfare-context">
         <span class="nav-icon" aria-hidden="true">🐾</span>
@@ -87,9 +88,9 @@
     <header id="header">
       <button id="hamburger" onclick="toggleSidebar()" aria-label="Toggle navigation" aria-expanded="false">☰</button>
       <div class="header-breadcrumb" aria-label="Breadcrumb">
-        <span id="breadcrumb-root">Wildfire Recovery DST</span>
+        <span id="breadcrumb-root">ANWE</span>
         <span aria-hidden="true">›</span>
-        <span id="breadcrumb-current">Case Overview</span>
+        <span id="breadcrumb-current">Map & environmental context</span>
       </div>
       <div class="header-actions">
         <span class="badge badge-synthetic" aria-label="All data is illustrative and synthetic">
@@ -111,9 +112,9 @@
 
         <div class="section-heading">
           <div>
-            <h1 id="co-heading">📋 Case Overview</h1>
+            <h1 id="co-heading">📋 Map & environmental context</h1>
             <p style="color:var(--clr-text-muted);font-size:0.875rem;margin-top:4px;">
-              Context, evidence sources, limitations and a schematic habitat diagram
+              Explore a fictional Sierra Morena case, then investigate conditions, wildlife and restoration choices
             </p>
           </div>
         </div>
@@ -123,39 +124,30 @@
           <span class="callout-icon" aria-hidden="true">🧪</span>
           <div>
             <strong>FICTIONAL ILLUSTRATIVE SCENARIO</strong> — "Sierra Morena Compounding Fires, Southern Spain"<br>
-            <span style="font-size:0.8rem;">All data, species records, fire extents, legal designations and citations are synthetic and invented for demonstration purposes. 
+            <span style="font-size:0.8rem;">Environmental overlays and assessments are fictional teaching examples. The OpenStreetMap reference basemap provides real geographic context; it is not ecological evidence.
             Do NOT use for real land-management decisions. See <em>Limitations</em> section below.</span>
           </div>
         </div>
 
-        <!-- Stats row -->
-        <div class="stat-grid" style="margin: 24px 0;" aria-label="Key fire statistics">
-          <div class="stat-card">
-            <div class="stat-value">~18k</div>
-            <div class="stat-label">Hectares burned</div>
-            <div class="stat-note">⚠️ Illustrative estimate</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">2</div>
-            <div class="stat-label">Consecutive fire seasons</div>
-            <div class="stat-note">2022 + 2023 (fictional)</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">11mo</div>
-            <div class="stat-label">Between fire events</div>
-            <div class="stat-note">Historic return: 30 yr (fictional)</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">6</div>
-            <div class="stat-label">Focal species / groups</div>
-            <div class="stat-note">Illustrative selection</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">3</div>
-            <div class="stat-label">Recovery options</div>
-            <div class="stat-note">Compared in Screen C</div>
+        <div class="card map-workspace">
+          <div class="map-toolbar"><div><h2>Explore the restoration area</h2><p>Spain · Sierra Morena · demonstration case</p></div>
+          <button class="btn btn-secondary" onclick="showSpain()">View Spain</button>
+          <button class="btn btn-primary" onclick="selectDemoArea()">Select demonstration area</button></div>
+          <div id="geographic-map" aria-label="Interactive reference map of Spain. Use arrow keys to pan and plus or minus to zoom."></div>
+          <p id="map-status" role="status">Reference basemap: OpenStreetMap, live tiles; capture date varies and is not provided. Internet required for tiles.</p>
+          <fieldset id="layer-controls"><legend>Demonstration overlays</legend></fieldset>
+          <p id="map-legend">Outline = fictional wildfire extent. Enable a layer to see its legend.</p>
+          <p id="map-provenance" class="provenance"></p>
+          <p class="provenance">Satellite imagery, protected-area boundaries and verified biodiversity observations: unavailable; integrations planned.</p>
+          <p id="selection-status" role="status">No area selected. Select the outlined demonstration case to start.</p>
+          <div id="selected-area" hidden>
+            <h3>Sierra Morena · north of Córdoba</h3>
+            <p>Burn severity and vegetation condition: unknown. Erosion, water quality and connectivity require field investigation. No NDVI, NBR or dNBR has been calculated.</p>
+            <p>Species categories: verified observations — none; modelled habitat presence — none; hypothetical examples — six species or groups. Historical GBIF records would not prove current occupancy.</p>
+            <div class="workflow-actions"><button class="btn btn-primary" onclick="showScreen('welfare-context')">Investigate animal welfare</button><button class="btn btn-secondary" onclick="showScreen('compare-pathways')">Compare restoration choices</button></div>
           </div>
         </div>
+        <div class="callout callout-info"><div><strong>GIS and AI have different roles.</strong> The map displays geometry using ordinary GIS. Assessments below are authored demonstration content. No AI model is connected. Evidence explanations and expert-reviewed draft summaries are planned AI capabilities.</div></div>
 
         <div class="grid-2">
           <!-- Description card -->
@@ -168,10 +160,10 @@
               </div>
             </div>
             <p style="font-size:0.875rem;line-height:1.7;color:var(--clr-text-muted);">
-              Two consecutive wildfire seasons burned approximately <strong style="color:var(--clr-text)">18 000 ha</strong>
-              of Mediterranean shrubland, montane woodland and riparian corridor across a 
-              fictional protected area in southern Spain. Back-to-back fires prevented 
-              full post-fire recovery between seasons, disrupting succession dynamics and 
+              Two fictional summer wildfire seasons affect an <strong style="color:var(--clr-text)">unmeasured demonstration area</strong>
+              of Mediterranean shrubland, montane woodland and riparian corridor across a
+              fictional study area in Sierra Morena, north of Córdoba. Back-to-back fires prevented
+              full post-fire recovery between seasons, disrupting succession dynamics and
               fragmenting habitat patches critical to several threatened species.
             </p>
             <div style="margin-top:16px;">
@@ -193,7 +185,7 @@
                 <div class="card-subtitle">⚠️ Illustrative — not real GIS data</div>
               </div>
             </div>
-            <canvas id="habitat-map" class="map-canvas" width="480" height="200" 
+            <canvas id="habitat-map" class="map-canvas" width="480" height="200"
                     aria-label="Schematic illustration of burned (red/orange) and unburned (green) habitat zones with species refugia markers. Data is illustrative only."
                     role="img"></canvas>
             <p style="font-size:0.7rem;color:var(--clr-text-faint);margin-top:8px;text-align:center;">
@@ -320,6 +312,7 @@
           </div>
         </div>
 
+        <p id="record-notice" class="callout callout-info">Records are saved only in this browser. Reviewer qualifications are not verified; this is not official approval.</p>
         <div id="expert-review-form"></div>
 
       </section>
@@ -341,9 +334,9 @@
         <div class="callout callout-info">
           <span class="callout-icon" aria-hidden="true">ℹ️</span>
           <div>
-            Multispecies Justice asks us to look beyond charismatic flagship species and consider the 
-            full range of affected beings — including invertebrates, soil biota and species not yet 
-            surveyed. A high "risk of omission" flag means these groups are at risk of being 
+            Multispecies Justice asks us to look beyond charismatic flagship species and consider the
+            full range of affected beings — including invertebrates, soil biota and species not yet
+            surveyed. A high "risk of omission" flag means these groups are at risk of being
             <em>systematically excluded</em> from planning, not that they are necessarily absent.
           </div>
         </div>
@@ -369,8 +362,8 @@
         <div class="callout callout-warning">
           <span class="callout-icon" aria-hidden="true">⚠️</span>
           <div>
-            This checklist reflects the <strong>current prototype</strong> state only. A reviewer can tick/override items 
-            and record disagreements below. The tool has <strong>not been independently validated</strong> and 
+            This checklist reflects the <strong>current prototype</strong> state only. A reviewer can tick/override items
+            and record disagreements below. The tool has <strong>not been independently validated</strong> and
             does not claim to improve animal welfare outcomes.
           </div>
         </div>
@@ -384,11 +377,17 @@
             <label class="form-label" for="reviewer-checklist-notes">Record any items you disagree with or flag as incomplete:</label>
             <textarea id="reviewer-checklist-notes" rows="5" placeholder="e.g. 'chk-6: Pollinator welfare listed as present but the welfare assessment lacks quantitative data — should be marked Partial, not Passed.'"></textarea>
           </div>
-          <button class="btn btn-primary" onclick="saveChecklistNotes()" aria-label="Save reviewer notes">💾 Save Reviewer Notes</button>
+          <button class="btn btn-primary" onclick="saveChecklistNotes(event)" aria-label="Save reviewer notes">💾 Save Reviewer Notes</button>
         </div>
 
       </section>
 
+      <section id="screen-restoration-summary" class="screen" aria-labelledby="summary-heading">
+        <h1 id="summary-heading">Restoration review summary</h1>
+        <p>Authored scenario and your human assessment. No AI-generated or verified report.</p>
+        <div class="workflow-actions"><button class="btn btn-primary" onclick="exportSummary()">Download text summary</button><button class="btn btn-secondary" onclick="showScreen('expert-review')">Back to expert review</button></div>
+        <pre id="summary-text" class="card"></pre>
+      </section>
     </div><!-- /page-content -->
   </main>
 </div><!-- /app -->
@@ -410,7 +409,11 @@
 
 <!-- ══ SCRIPTS ════════════════════════════════════════════ -->
 <script src="data/scenario.js"></script>
+<script src="data/geography.js"></script>
+<script src="data/providers.js"></script>
+<script src="vendor/leaflet.js"></script>
 <script src="app.js"></script>
+<script src="workspace.js"></script>
 
 </body>
 </html>

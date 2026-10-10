@@ -3,7 +3,7 @@
    Global CSS Design System
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+/* System fonts keep the prototype readable offline. */
 
 /* ── Design Tokens ─────────────────────────────────────── */
 :root {
@@ -70,6 +70,27 @@
   --sidebar-w: 260px;
   --header-h:  64px;
 }
+
+/* ANWE workspace: keep the established dark interface, improve hierarchy and contrast. */
+:root { --clr-text-muted: #acb8bd; --clr-text-faint: #9caeb4; --clr-accent: #6cc6ad; --clr-green: #6dd49a; --clr-yellow: #edc56a; --clr-bg: #101a1d; --clr-surface: #182529; }
+.map-workspace { margin-bottom: 20px; padding: 20px; }
+.map-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+.map-toolbar > div { flex: 1; min-width: 220px; }
+.map-toolbar h2 { font-size: 1.25rem; }
+.map-toolbar p, .provenance, #map-status, #map-legend { color: var(--clr-text-muted); font-size: .8rem; line-height: 1.6; margin: 8px 0; }
+#geographic-map { height: 430px; width: 100%; background: #d7dfd8; color: #172d2b; border-radius: 10px; z-index: 0; }
+#layer-controls { display: flex; flex-wrap: wrap; gap: 12px; border: 1px solid var(--clr-border); padding: 12px; margin-top: 14px; }
+#layer-controls legend { padding: 0 6px; font-size: .85rem; }
+#layer-controls label { display: flex; align-items: center; gap: 6px; font-size: .85rem; cursor: pointer; }
+#layer-controls input { width: 18px; height: 18px; accent-color: #6cc6ad; }
+#selected-area { padding: 16px; margin-top: 12px; border-left: 3px solid #6cc6ad; background: var(--clr-surface-2); line-height: 1.7; }
+.workflow-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.demo-map-marker { background: #9b3d23; color: white; border: 2px solid white; border-radius: 50%; text-align: center; line-height: 28px; font-weight: bold; }
+#summary-text { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.75; margin-top: 18px; }
+:focus-visible { outline: 3px solid #edc56a !important; outline-offset: 3px; }
+.fade-in { animation: none !important; }
+@media (max-width: 768px) { #geographic-map { height: 320px; } .map-workspace { padding: 12px; } .map-toolbar .btn { width: 100%; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 
 /* ── Reset ─────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

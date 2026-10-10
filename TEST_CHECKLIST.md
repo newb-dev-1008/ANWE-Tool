@@ -1,6 +1,6 @@
 # Test Checklist — Animal-Centred Wildfire Recovery Decision Support Prototype v0.1
 
-> **Scope**: This checklist covers evidence traceability, uncertainty handling, species representation, human oversight and misleading recommendations, as required by the tool brief.  
+> **Scope**: This checklist covers evidence traceability, uncertainty handling, species representation, human oversight and misleading recommendations, as required by the tool brief.
 > **Status**: Self-assessment of prototype v0.1 (2026-10-10). NOT independently validated.
 
 ---
@@ -114,3 +114,21 @@ The following issues are acknowledged but not fully mitigated in v0.1:
 ---
 
 *Checklist prepared for Ethics of AI assignment, TU/e, Quarter 1, 2026. Not for operational use.*
+# ANWE v0.2 workflow validation
+
+The detailed checklist below describes the original v0.1 prototype and is retained as historical material. Its old species names, intervention percentages and in-memory-only review behaviour have been superseded.
+
+For the updated application, run `node --test tests/*.test.cjs`, then manually check:
+
+1. Open the app at desktop and mobile widths; verify readable text, navigation and no horizontal page overflow.
+2. Pan/zoom Spain by mouse and keyboard. Select the demonstration case by polygon, marker and button. Confirm the area is north of Córdoba.
+3. Toggle each layer, check its explanatory legend and verify creation date, fictional event date and limitations remain visible.
+4. Disconnect the network and reload. Local Leaflet and demonstration shapes should remain available; unavailable reference tiles should display a status message.
+5. Inspect all six welfare tabs and five domains. No real observation or current occupancy should be claimed. Open a detail modal, check Tab stays inside, then Escape returns focus.
+6. Compare all three strategies in all three views. Find risks, uncertainties, evidence gaps and inappropriate situations; no option should be preselected or recommended.
+7. Try saving an empty review. Fill reviewer, date and rationale, add evidence, challenges and unresolved risks, then save locally and reload.
+8. Verify the local record is restored, view a summary and download text and JSON. Confirm current draft fields, evidence caveats and no official approval claim.
+9. Clear the record and reload; verify it is removed. Check storage-disabled mode reports the limitation and still permits export.
+10. Edit the ethics checklist and export; verify session-only overrides are included. Review with a screen reader before any claim of accessibility compliance.
+
+Browser visual QA was unavailable in the implementation session. Automated checks use a DOM harness and do not prove layout, tile rendering or screen-reader behaviour.

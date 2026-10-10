@@ -1,140 +1,42 @@
-# Animal-Centred Wildfire Recovery Decision Support — Prototype v0.1
+# ANWE — Animal Welfare & Ecosystem Restoration
 
-> **⚠️ IMPORTANT: This is an academic prototype for an Ethics of AI assignment (TU/e, 2026).  
-> ALL data is synthetic and illustrative. This tool has NOT been validated.  
-> Do NOT use for real land-management decisions.**
+An academic decision-support prototype for post-wildfire restoration in Spain. Environmental assessments, wildfire shapes and species examples are demonstrations, not verified evidence. Human reviewers compare choices; the application never selects or authorises an intervention.
 
----
+## Install and run
 
-## 1. How to Run
+No installation or build step is required. From this directory:
 
-This is a **pure HTML/CSS/JavaScript** application — no build step, no dependencies, no server required.
-
-```bash
-# Option A: simply open in browser
-# Navigate to the Webapp/ folder and double-click index.html
-
-# Option B: serve locally (recommended to avoid any CORS edge cases)
-# If you have Python installed:
+```sh
 python -m http.server 8080
-# Then open: http://localhost:8080
-
-# Or with Node.js:
-npx serve .
-# Then open the URL shown in the terminal
 ```
 
-### File structure
+Open http://localhost:8080. Opening `index.html` directly also works, but browser storage behaviour can differ. Leaflet 1.9.4 is bundled under `vendor/` with its licence. Internet access is needed only for OpenStreetMap reference tiles; assessments and demonstration geometry work without them. Use the selection button if the map library is unavailable.
 
-```
-Webapp/
-├── index.html          ← Main HTML entry point (all screens)
-├── style.css           ← Full CSS design system (dark-mode, responsive)
-├── app.js              ← Application logic (rendering, navigation, export)
-├── data/
-│   └── scenario.js     ← ⚠️ ALL ILLUSTRATIVE DATA lives here
-├── README.md           ← This file
-└── TEST_CHECKLIST.md   ← Evaluation checklist (separate document)
-```
+## Demonstration workflow
 
----
+1. Explore Spain using the map; select the fictional Sierra Morena area north of Córdoba with the marker, polygon or selection button.
+2. Toggle the severity, vegetation and refuge demonstration overlays. Read the legend, creation date and limitations. No imagery-derived indices are calculated.
+3. Open animal welfare to explore six hypothetical species/groups and their food, water, shelter, breeding and movement concerns.
+4. Compare natural regeneration, assisted ecological restoration and active habitat restoration using the existing side-by-side, stacked and species views. Review risks, inappropriate situations and evidence gaps.
+5. Open expert review. Record reviewer, date, preferred option or an undecided assessment, rationale, challenged assumptions, overrides, unresolved risks and supporting evidence. Include reasons for rejecting alternatives.
+6. Save locally. Reloading restores the last saved expert record in the same browser/origin. Clear Record removes it after confirmation.
+7. View the restoration summary and download plain text, or export JSON containing the human assessment, demonstration geography, sources and alternatives. Export includes current unsaved edits; these are identified as a draft/local record, never approval.
 
-## 2. Assumptions
+The original schematic, multispecies justice analysis and editable ethics checklist remain available. Checklist edits are session-only and included in JSON export.
 
-- **No authentication or data persistence**: The tool runs entirely in-browser. The expert review record is held in memory and can be exported as JSON. Refreshing the page resets it.
-- **No real API calls**: All data is embedded in `data/scenario.js`. No external databases, satellite APIs or species registries are queried.
-- **Single-case prototype**: The tool is designed around one illustrative scenario. Multiple cases would require a case-selection screen and per-case data files.
-- **Coarse species location data only**: No precise GPS coordinates are shown for any species — only schematic habitat zone diagrams — to protect sensitive species location information.
-- **EU legal context assumed**: References to "Strictly Protected" / "Natura 2000" etc. are fictional and illustrative of an EU regulatory context. They carry no legal weight.
+## Architecture and checks
 
----
+- `index.html`, `style.css`, `app.js`: existing screens, rendering and interactions.
+- `workspace.js`: geographic selection, local review storage and summary.
+- `data/scenario.js`: authored demonstration case and qualitative assessments.
+- `data/geography.js`: hand-drawn WGS84 teaching polygons with provenance.
+- `data/providers.js`: planned-provider catalogue and adapter registration/loading contract. No environmental service is connected.
+- `vendor/`: pinned Leaflet assets; attribution remains visible.
 
-## 3. Scenario Data — Provenance and Limitations
+Run `node --test tests/*.test.cjs` for provider, geometry, rendering, local save/restore and report checks. `TEST_CHECKLIST.md` provides historical manual review checks; see the updated workflow section there.
 
-### Scenario identity
-- **Name**: Sierra Morena Compounding Fires 2022–2023 — FICTIONAL ILLUSTRATIVE SCENARIO
-- **Inspired by**: Mediterranean Europe (southern Spain / Andalusia) — geography only, no real events
-- **Created**: 2026-10-10 for Ethics of AI assignment, TU/e
+## Current limitations
 
-### Data provenance
+One fictional case; no actual imagery, spatial habitat inference, verified observations, authentication, qualified-user verification, backend storage or AI model. Reference map tiles are not scientific evidence. A regional species example does not establish occupancy. Local storage can be unavailable or cleared and is not an audit database. Use export to retain a copy; avoid entering sensitive personal information. Public tile requests expose usual network metadata to the tile provider. No real land management should rely on this teaching prototype.
 
-| Element | Status | Source |
-|---|---|---|
-| Fire extent (18 000 ha) | **Synthetic** — invented for demonstration | Not based on any real fire record |
-| Species selection | **Illustrative** — realistic Mediterranean fauna | Selected for guild diversity, not survey data |
-| Welfare assessments | **Inferred** — from general ecological principles | No site-specific surveys conducted |
-| Camera-trap records | **Fictional** — 2 eagle owl, multiple deer detections | Invented to demonstrate evidence-type distinctions |
-| Burn-severity map | **Schematic** — canvas illustration only | Not real satellite or GIS data |
-| Literature references | **Fictional** — do not cite | Invented references |
-| Recovery pathways | **Illustrative** — ecologically plausible | Not evaluated in any real trial at this site |
-| Legal designations | **Fictional** | Not real Natura 2000 or Spanish law designations |
-
-### Key limitations (see also Case Overview screen)
-
-1. **All data are synthetic** — no real field surveys have been conducted.
-2. **No validated species distribution models** — presence/absence is assumed.
-3. **Welfare assessments are expert inferences, not observations** — except where marked "Observation (illustrative)" (also invented).
-4. **Back-to-back fire cumulative stress** is poorly understood even in real literature — uncertainty is systematically high.
-5. **Missing records must NOT be interpreted as species absence** — this is stated explicitly in multiple places in the UI.
-6. **Satellite imagery does NOT directly measure animal welfare or suffering** — this limitation is stated wherever remote sensing is mentioned.
-7. **The tool has not been independently validated** and does not claim to improve animal welfare outcomes.
-
----
-
-## 4. Ethical Design Principles Applied
-
-### Multispecies Justice
-- Welfare assessed across 6 focal species/groups including invertebrates (pollinators), which are typically excluded from fire-recovery planning.
-- A dedicated Multispecies Justice screen shows who benefits, who is harmed, and whose interests are missing or underweighted.
-- Soil biota and undetected species are flagged as critical omission risks.
-
-### Value Sensitive Design
-- Each recovery option explicitly shows affected stakeholders (ecological AND human), including groups with conflicting interests (conservation NGOs vs. hunting associations vs. graziers).
-- Missing stakeholder groups are surfaced, not hidden.
-- The expert review screen enables iterative revision and challenges to tool outputs.
-
-### No single aggregate score
-- No overall welfare score is computed or displayed. Per-species welfare is always shown disaggregated.
-- This prevents a high average score concealing severe harm to a smaller, less-represented group.
-
-### Human oversight
-- The tool explicitly does not issue or execute management instructions.
-- All outputs require expert review, challenge and rationale recording.
-- The decision record is human-authored and must be explicitly saved/exported.
-
-### Transparency about data quality
-- Every data element shows: source label, date, confidence level, key limitations.
-- Evidence type (Observation / Inference / Unknown) is distinguished and colour-coded throughout.
-- A persistent red banner on every screen reinforces prototype/synthetic status.
-
----
-
-## 5. Architecture Notes (for future extension)
-
-The tool is intentionally modular:
-
-- **Data layer**: `data/scenario.js` exports a `SCENARIO` object. Replace or augment with verified real-world data without touching UI logic.
-- **Rendering layer**: `app.js` contains pure functions that consume `SCENARIO` and produce HTML. Each screen has its own render function.
-- **Style layer**: `style.css` uses CSS custom properties (tokens) so the colour system can be updated globally.
-
-To add a new verified data source:
-1. Add a new entry to `SCENARIO.caseOverview.evidenceSources` with `verified: true`.
-2. Update relevant species welfare assessments with `evidenceType: "Observation"` and real field-survey data.
-3. Update `SCENARIO.meta.dataVersion` and `disclaimer`.
-
----
-
-## 6. Limitations of This Prototype
-
-- No map integration (no real GIS / Leaflet / Google Maps) — only a schematic canvas illustration.
-- No database or authentication — expert records are lost on page refresh unless exported.
-- No multi-user collaboration features.
-- No version history for decision records.
-- Welfare assessment framework is informal and not based on a validated animal-welfare measurement protocol.
-- Recovery pathway options are illustrative only and have not been evaluated in controlled trials.
-- The tool does not incorporate real-time data feeds (satellite, weather, camera trap APIs).
-- Traditional ecological knowledge and Indigenous data sovereignty are mentioned as gaps but not structurally integrated.
-
----
-
-*Prototype built for Ethics of AI assignment, TU/e, Quarter 1, 2026. Not for operational use.*
+See `DATA_SOURCES.md`, `ETHICS_AND_LIMITATIONS.md` and `FUTURE_ROADMAP.md`.

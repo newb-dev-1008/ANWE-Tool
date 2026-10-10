@@ -28,16 +28,16 @@ const SCENARIO = {
     title: "Sierra Morena Compounding Fires 2022–2023",
     description:
       "Two consecutive wildfire seasons (summer 2022 and summer 2023) have burned approximately " +
-      "18 000 ha of Mediterranean shrubland, montane woodland and riparian corridor across a " +
+      "an unmeasured demonstration area of Mediterranean shrubland, montane woodland and riparian corridor across a " +
       "fictional protected area in southern Spain. The back-to-back fires prevented full " +
       "post-fire recovery between seasons, disrupting succession dynamics and fragmenting " +
       "habitat patches critical to several threatened species.",
     fireScenario: {
       type: "Multi-season compounding fires",
       seasons: ["Summer 2022", "Summer 2023"],
-      estimatedExtent_ha: 18000,
+      estimatedExtent_ha: null,
       severity: "Mixed — high-severity crown fire patches interspersed with moderate surface fire",
-      returnInterval: "Historic 30-year return interval broken; second fire occurred 11 months after first",
+      returnInterval: "Fictional consecutive summer fire seasons; historic return interval not assessed",
       note: "⚠️ ILLUSTRATIVE — extent and severity are fictional estimates",
     },
     habitat: {
@@ -69,10 +69,10 @@ const SCENARIO = {
       {
         id: "src-3",
         type: "Literature",
-        label: "Illustrative literature summary (fictional references)",
+        label: "Unvalidated teaching narrative — no literature citation",
         date: "2024-01",
-        confidence: "Moderate for general ecological principles, None for site-specific claims",
-        limitations: "References are invented. Do not cite in real work.",
+        confidence: "Not assessed — demonstration only",
+        limitations: "No supporting published evidence is attached. Do not cite this narrative as research.",
         verified: false,
       },
     ],
@@ -90,7 +90,7 @@ const SCENARIO = {
       id: "sp-lynx",
       commonName: "Iberian Lynx",
       scientificName: "Lynx pardinus",
-      protectionStatus: "FICTIONAL — Critically Endangered (illustrative)",
+      protectionStatus: "Legal and conservation status not assessed for this site",
       guild: "Large carnivore",
       sensitivityToFire: "High",
       mobilityPotential: "Moderate — territorial, requires large home ranges",
@@ -106,9 +106,9 @@ const SCENARIO = {
     },
     {
       id: "sp-eagle",
-      commonName: "Bonelli's Eagle / Eagle Owl",
-      scientificName: "Aquila fasciata / Bubo bubo",
-      protectionStatus: "FICTIONAL — Strictly Protected (illustrative EU Birds Directive)",
+      commonName: "Bonelli's Eagle",
+      scientificName: "Aquila fasciata",
+      protectionStatus: "Legal and conservation status not assessed for this site",
       guild: "Raptors",
       sensitivityToFire: "Moderate (adults resilient; nest sites vulnerable)",
       mobilityPotential: "High — can relocate foraging areas",
@@ -116,41 +116,41 @@ const SCENARIO = {
       welfareContext: {
         food: { status: "MODERATE CONCERN", evidenceType: "Inference", detail: "Open burned areas may temporarily increase prey visibility but medium-term prey collapse likely.", uncertainty: "Moderate", knowledgeGap: "Prey availability not measured" },
         water: { status: "LOW CONCERN", evidenceType: "Inference", detail: "Raptors derive most water from prey; direct water access less critical.", uncertainty: "Low", knowledgeGap: "None identified" },
-        shelter: { status: "HIGH CONCERN", evidenceType: "Inference", detail: "Eagle Owl nest trees (large mature pines) may have been burned. Cliff-face nests for Bonelli's Eagle likely intact.", uncertainty: "Moderate", knowledgeGap: "Nest-site surveys not conducted" },
-        breeding: { status: "HIGH CONCERN", evidenceType: "Unknown", detail: "Spring 2023 breeding season coincided with second fire season. Nest abandonment or chick mortality not assessed.", uncertainty: "Very high", knowledgeGap: "No breeding-success monitoring" },
-        movement: { status: "LOW CONCERN", evidenceType: "Observation (illustrative camera trap)", detail: "Eagle Owl detected at 2 camera trap sites in unburned patches post-fire (illustrative record).", uncertainty: "High — 2 detections insufficient", knowledgeGap: "Foraging-range shifts not tracked" },
+        shelter: { status: "HIGH CONCERN", evidenceType: "Inference", detail: "Nest disturbance and loss of nearby cover require field assessment; cliff nesting does not establish that nests survived.", uncertainty: "Moderate", knowledgeGap: "Nest-site surveys not conducted" },
+        breeding: { status: "HIGH CONCERN", evidenceType: "Unknown", detail: "Overlap between nesting and fictional summer fires is not established. Nest abandonment or chick mortality not assessed.", uncertainty: "Very high", knowledgeGap: "No breeding-success monitoring" },
+        movement: { status: "LOW CONCERN", evidenceType: "Observation (illustrative camera trap)", detail: "Hypothetical raptor movement through unburned patches; no camera-trap detection is claimed.", uncertainty: "High — 2 detections insufficient", knowledgeGap: "Foraging-range shifts not tracked" },
       },
       note: "⚠️ ILLUSTRATIVE",
     },
     {
-      id: "sp-tortoise",
-      commonName: "Hermann's Tortoise",
-      scientificName: "Testudo hermanni",
-      protectionStatus: "FICTIONAL — Vulnerable (illustrative)",
-      guild: "Reptile — slow-moving ground-dweller",
-      sensitivityToFire: "Very High — extremely limited escape capacity",
-      mobilityPotential: "Very Low — cannot outrun fire fronts",
-      emoji: "🐢",
+      id: "sp-lizard",
+      commonName: "Ocellated Lizard",
+      scientificName: "Timon lepidus",
+      protectionStatus: "Legal and conservation status not assessed for this site",
+      guild: "Reptile — ground-dweller",
+      sensitivityToFire: "Unknown at this site; juveniles and sheltered individuals may be vulnerable",
+      mobilityPotential: "Site-specific escape capacity not assessed",
+      emoji: "🦎",
       welfareContext: {
-        food: { status: "HIGH CONCERN", evidenceType: "Inference", detail: "Herbaceous and low shrub vegetation (primary forage) eliminated across large areas. Recovery of suitable vegetation expected to take 3–7 years.", uncertainty: "Moderate", knowledgeGap: "Vegetation recovery rates not measured at this site" },
-        water: { status: "MODERATE CONCERN", evidenceType: "Inference", detail: "Tortoises obtain water from food plants and dew; loss of vegetation cover reduces dew formation and may increase dehydration risk in summer heat.", uncertainty: "Moderate", knowledgeGap: "Microclimate data not available" },
-        shelter: { status: "HIGH CONCERN", evidenceType: "Inference", detail: "Scrub cover used for thermoregulation and predator avoidance lost. Exposed tortoises face increased predation and thermal stress.", uncertainty: "Moderate", knowledgeGap: "Thermal refugia mapping not done" },
+        food: { status: "HIGH CONCERN", evidenceType: "Inference", detail: "Loss of invertebrate prey and foraging cover could affect lizards; no prey abundance or recovery rate is measured.", uncertainty: "Moderate", knowledgeGap: "Vegetation recovery rates not measured at this site" },
+        water: { status: "MODERATE CONCERN", evidenceType: "Inference", detail: "Loss of shade and changes in prey availability may increase dehydration risk; local microclimate and water access are unknown.", uncertainty: "Moderate", knowledgeGap: "Microclimate data not available" },
+        shelter: { status: "HIGH CONCERN", evidenceType: "Inference", detail: "Scrub cover used for thermoregulation and predator avoidance lost. Exposed lizards face increased predation and thermal stress.", uncertainty: "Moderate", knowledgeGap: "Thermal refugia mapping not done" },
         breeding: { status: "HIGH CONCERN", evidenceType: "Unknown", detail: "Nest sites (buried eggs) may have been destroyed by fire heat. Hatchling survival in denuded landscape unknown.", uncertainty: "Very high", knowledgeGap: "No nest-site surveys" },
-        movement: { status: "HIGH CONCERN", evidenceType: "Inference", detail: "Very limited movement capacity means many individuals are likely dead or stranded in burned areas. Survivors in refugia may be isolated.", uncertainty: "Moderate", knowledgeGap: "Mortality estimates not available" },
+        movement: { status: "HIGH CONCERN", evidenceType: "Inference", detail: "Habitat fragmentation may constrain movement between refugia. No mortality or dispersal measurements are available.", uncertainty: "Moderate", knowledgeGap: "Mortality estimates not available" },
       },
       note: "⚠️ ILLUSTRATIVE",
     },
     {
       id: "sp-toad",
-      commonName: "Mallorcan Midwife Toad",
-      scientificName: "Alytes muletensis",
-      protectionStatus: "FICTIONAL — Endangered (illustrative)",
+      commonName: "Iberian Midwife Toad",
+      scientificName: "Alytes cisternasii",
+      protectionStatus: "Legal and conservation status not assessed for this site",
       guild: "Amphibian",
       sensitivityToFire: "High (aquatic larval stage; adults vulnerable to desiccation)",
       mobilityPotential: "Very Low",
       emoji: "🐸",
       welfareContext: {
-        food: { status: "MODERATE CONCERN", evidenceType: "Inference", detail: "Invertebrate prey reduced post-fire. Recovery expected in 1–3 years.", uncertainty: "Moderate", knowledgeGap: "Invertebrate surveys not available" },
+        food: { status: "MODERATE CONCERN", evidenceType: "Inference", detail: "Invertebrate prey reduced post-fire. Recovery rate is unknown without monitoring.", uncertainty: "Moderate", knowledgeGap: "Invertebrate surveys not available" },
         water: { status: "HIGH CONCERN", evidenceType: "Inference", detail: "Increased post-fire runoff and ash loading may cause eutrophication or toxicity in breeding pools. Loss of riparian shade increases water temperature.", uncertainty: "High", knowledgeGap: "Water quality data not collected" },
         shelter: { status: "HIGH CONCERN", evidenceType: "Inference", detail: "Damp microhabitats under rocks and leaf litter destroyed. Adults require moist refugia.", uncertainty: "Moderate", knowledgeGap: "Microhabitat surveys not done" },
         breeding: { status: "HIGH CONCERN", evidenceType: "Unknown", detail: "Breeding pools may have been altered by fire debris and elevated water temperatures. Larval survival unknown.", uncertainty: "Very high", knowledgeGap: "No post-fire breeding surveys" },
@@ -162,7 +162,7 @@ const SCENARIO = {
       id: "sp-deer",
       commonName: "Red Deer",
       scientificName: "Cervus elaphus",
-      protectionStatus: "Not threatened (illustrative — hunted species)",
+      protectionStatus: "Legal and conservation status not assessed for this site",
       guild: "Large herbivore",
       sensitivityToFire: "Low–Moderate (mobile, can escape fire)",
       mobilityPotential: "High",
@@ -180,7 +180,7 @@ const SCENARIO = {
       id: "sp-pollinators",
       commonName: "Pollinators (Bees & Butterflies)",
       scientificName: "Various — Apis mellifera, Anthophora spp., Papilio machaon (illustrative)",
-      protectionStatus: "Variable — some species protected (illustrative)",
+      protectionStatus: "Legal and conservation status not assessed for this site",
       guild: "Invertebrates",
       sensitivityToFire: "High (hive/colony destruction; larval stage immobile)",
       mobilityPotential: "Moderate (adults mobile; colonies immobile)",
@@ -197,90 +197,239 @@ const SCENARIO = {
   ],
 
   recoveryPathways: [
-    {
-      id: "opt-A",
-      name: "Option A — Assisted Natural Regeneration (ANR)",
-      shortLabel: "ANR",
-      color: "#2563eb",
-      description: "Allow natural post-fire regeneration with targeted human support: remove invasive pioneer species where they threaten native recovery, install temporary water points for wildlife, and protect regenerating areas from livestock grazing. No replanting of trees.",
-      timeframe: "5–15 years to substantial habitat recovery",
-      cost: "Low–Moderate (illustrative)",
-      managementIntensity: "Low",
-      potentialBenefits: ["Maintains native plant community composition and genetic diversity", "Reduces soil disturbance compared to active replanting", "Post-fire shrub regrowth provides shelter for tortoises within 3–5 years", "Nectar-rich pioneer plants support pollinator recolonisation within 1–3 years", "Lowest risk of introducing non-native species"],
-      potentialHarms: ["Slow recovery means Iberian Lynx faces prolonged food and shelter deficit (5–10 years)", "Mallorcan Midwife Toad breeding pools remain at risk from post-fire runoff without intervention", "Invasive species (e.g. Eucalyptus, Ailanthus) may outcompete native shrubs if not controlled", "Compounding-fire risk: recovered shrubland may be highly flammable within 10–15 years"],
-      affectedStakeholders: [
-        { group: "Iberian Lynx", welfare: "NEGATIVE short-term", notes: "Prolonged prey and shelter deficit" },
-        { group: "Hermann's Tortoise", welfare: "POSITIVE medium-term", notes: "Early shrub regrowth aids thermoregulation" },
-        { group: "Pollinators", welfare: "POSITIVE short-term", notes: "Pioneer flowers provide early forage" },
-        { group: "Mallorcan Midwife Toad", welfare: "UNCERTAIN", notes: "No targeted water-quality intervention" },
-        { group: "Local graziers", welfare: "NEGATIVE short-term", notes: "Grazing exclusion may reduce forage access" },
-        { group: "Hunting associations", welfare: "NEGATIVE medium-term", notes: "Reduced rabbit and deer populations" },
-        { group: "Conservation NGOs", welfare: "POSITIVE", notes: "Aligns with passive restoration values" },
+  {
+    "timeframe": "Unknown — requires baseline surveys and repeated monitoring",
+    "cost": "Not estimated",
+    "evidence": {
+      "strength": "Unvalidated demonstration; no site-specific supporting evidence",
+      "sources": [
+        "src-1"
       ],
-      missingStakeholders: ["Indigenous / traditional land users (data gap)", "Invertebrate species not yet identified in this area (biodiversity gap)"],
-      evidence: { strength: "Moderate (general principles) / Very Low (site-specific)", sources: ["src-1", "src-3"], keyUncertainties: ["Rate of native shrub regeneration after back-to-back fires is poorly documented", "Invasive species pressure unknown without survey", "Climate-change projections may slow recovery further"] },
-      fieldChecksNeeded: ["Annual vegetation transect surveys", "Rabbit population monitoring", "Tortoise thermal-refuge mapping", "Water-point utilisation monitoring", "Invasive species mapping"],
-      ethicsFlags: ["Does not actively address acute starvation risk for Iberian Lynx in short term", "Pollinator welfare improved but monitoring often overlooked in practice"],
+      "keyUncertainties": [
+        "Current occupancy, welfare and habitat condition are unknown",
+        "Effects depend on drought, soil, timing and local recovery"
+      ]
     },
-    {
-      id: "opt-B",
-      name: "Option B — Active Replanting with Prey Supplementation",
-      shortLabel: "Active Replanting",
-      color: "#16a34a",
-      description: "Replant native oak and pine seedlings across 40% of burned area within 12 months. Simultaneously implement emergency rabbit restocking from captive-bred populations to support Iberian Lynx, and install mesh enclosures to protect tortoise thermal refugia during the establishment phase.",
-      timeframe: "3–8 years to functional habitat recovery (with intervention)",
-      cost: "High (illustrative)",
-      managementIntensity: "High",
-      potentialBenefits: ["Reduces Iberian Lynx food deficit timeline by potentially 3–5 years", "Accelerated canopy closure provides thermal refuge for tortoises within 3–5 years", "Mesh enclosures directly reduce tortoise predation and thermal stress", "Faster structural habitat return for raptors (nest tree establishment)"],
-      potentialHarms: ["Replanting risks introducing non-local genotypes reducing genetic diversity", "Soil disturbance during planting may harm surviving soil invertebrates and ground-nesting bee colonies", "Rabbit restocking may introduce pathogens (RHD, myxomatosis) — biosecurity risk", "High management intensity may disturb breeding raptors during nesting season", "Enclosures may inadvertently trap predators or restrict other species movement"],
-      affectedStakeholders: [
-        { group: "Iberian Lynx", welfare: "POSITIVE short-term (if restock succeeds)", notes: "Prey supplementation reduces starvation risk" },
-        { group: "Hermann's Tortoise", welfare: "POSITIVE short-term", notes: "Enclosures reduce thermal stress and predation" },
-        { group: "Pollinators", welfare: "NEGATIVE short-term", notes: "Soil disturbance destroys ground-nesting sites" },
-        { group: "Raptors", welfare: "MIXED", notes: "Faster habitat recovery vs. disturbance during planting" },
-        { group: "Mallorcan Midwife Toad", welfare: "UNCERTAIN — NOT ADDRESSED", notes: "No specific intervention for breeding pools" },
-        { group: "Hunting associations", welfare: "POSITIVE medium-term", notes: "Rabbit restock may benefit quarry stocks" },
-        { group: "Veterinary / biosecurity interests", welfare: "NEGATIVE potential", notes: "Rabbit restocking introduces disease risk" },
+    "fieldChecksNeeded": [
+      "Survey vegetation recovery and erosion",
+      "Investigate food, shelter, water and habitat connectivity",
+      "Include invertebrates, juvenile animals and undetected species"
+    ],
+    "missingStakeholders": [
+      "Soil biota and undetected species",
+      "Local land users whose views have not been collected"
+    ],
+    "id": "opt-A",
+    "name": "Natural regeneration",
+    "shortLabel": "Natural regeneration",
+    "color": "#58a6ff",
+    "managementIntensity": "Low",
+    "description": "Protect existing recovery processes and monitor vegetation and wildlife. Avoid soil disturbance; no routine planting, feeding or water provisioning.",
+    "potentialBenefits": [
+      "May retain locally adapted vegetation and surviving refugia",
+      "May avoid machinery disturbance to animals and soil organisms"
+    ],
+    "potentialHarms": [
+      "May leave erosion or habitat loss unresolved where recovery is insufficient",
+      "Acute welfare concerns may require a separate qualified assessment"
+    ],
+    "inappropriate": "May be inappropriate where field evidence shows severe erosion, failed regeneration or invasive dominance.",
+    "reviewRequired": "Qualified ecological and animal welfare review before intervention. Check landowner consent and applicable authority permissions; no approval is issued here.",
+    "ethicsFlags": [
+      "Benefits are conditional hypotheses, not measured impacts",
+      "No aggregate welfare score or automatic strategy selection"
+    ],
+    "affectedStakeholders": [
+      {
+        "group": "Iberian Lynx",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Bonelli's Eagle",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Ocellated Lizard",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Iberian Midwife Toad",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Red Deer",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Pollinators",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      }
+    ]
+  },
+  {
+    "timeframe": "Unknown — requires baseline surveys and repeated monitoring",
+    "cost": "Not estimated",
+    "evidence": {
+      "strength": "Unvalidated demonstration; no site-specific supporting evidence",
+      "sources": [
+        "src-1"
       ],
-      missingStakeholders: ["Soil biota and decomposer communities (not assessed)", "Non-target reptile species affected by mesh enclosures", "Midwife toad is NOT directly addressed — significant gap"],
-      evidence: { strength: "Low (active replanting in compounding-fire contexts is under-studied)", sources: ["src-2", "src-3"], keyUncertainties: ["Rabbit restock success rates in post-fire landscapes unknown", "Pathogen introduction risk from captive rabbits not quantified", "Planting survival rates under climate-change drought scenarios unknown"] },
-      fieldChecksNeeded: ["Seedling survival monitoring (monthly in first year)", "Rabbit population health surveillance (disease screening)", "Predator monitoring around mesh enclosures", "Soil invertebrate surveys before and after planting", "Midwife toad breeding pool water quality — urgent gap"],
-      ethicsFlags: ["Pollinators and soil invertebrates harmed — welfare often not considered in replanting programmes", "Mallorcan Midwife Toad NOT addressed — species representation gap", "Rabbit restock introduces welfare risk to wild rabbits (disease) requiring explicit approval"],
+      "keyUncertainties": [
+        "Current occupancy, welfare and habitat condition are unknown",
+        "Effects depend on drought, soil, timing and local recovery"
+      ]
     },
-    {
-      id: "opt-C",
-      name: "Option C — Mosaic Management with Firebreak Integration",
-      shortLabel: "Mosaic + Firebreak",
-      color: "#9333ea",
-      description: "Create a planned mosaic of recovery zones: 30% active replanting (priority species areas), 50% assisted natural regeneration, and 20% managed firebreak corridors with low-growing fire-resistant vegetation. Integrate emergency water supplementation for all threatened species.",
-      timeframe: "5–10 years to functional mosaic",
-      cost: "Moderate–High (illustrative)",
-      managementIntensity: "Moderate",
-      potentialBenefits: ["Balances rapid intervention for acute welfare risks with long-term biodiversity outcomes", "Firebreak corridors reduce risk of third consecutive fire", "Mosaic structure benefits multiple species across different guilds simultaneously", "Monitoring network generates verified data to replace synthetic data in future iterations", "Water supplementation directly addresses acute dehydration risk for all focal species"],
-      potentialHarms: ["Firebreak maintenance may require herbicide use — impacts invertebrates and amphibians", "Complex coordination between multiple interventions increases implementation risk", "Camera-trap network requires ongoing resourcing", "Partial replanting still carries some genotype and soil disturbance risks", "Firebreak corridors may facilitate spread of invasive plant species"],
-      affectedStakeholders: [
-        { group: "Iberian Lynx", welfare: "POSITIVE medium-term", notes: "Prey supplementation + faster partial habitat recovery" },
-        { group: "Hermann's Tortoise", welfare: "POSITIVE", notes: "Mosaic provides refugia patches throughout recovery" },
-        { group: "Pollinators", welfare: "POSITIVE", notes: "ANR zones and mosaic structure provide diverse forage patches" },
-        { group: "Mallorcan Midwife Toad", welfare: "POSITIVE — DIRECTLY ADDRESSED", notes: "Water supplementation targets breeding pools" },
-        { group: "Raptors", welfare: "POSITIVE", notes: "Mosaic edge habitat beneficial for foraging" },
-        { group: "Red Deer", welfare: "NEUTRAL", notes: "Mosaic provides mixed forage" },
-        { group: "Local graziers", welfare: "MIXED", notes: "Some grazing access retained in firebreak corridors" },
-        { group: "Hunting associations", welfare: "POSITIVE medium-term", notes: "Mosaic supports diverse prey communities" },
+    "fieldChecksNeeded": [
+      "Survey vegetation recovery and erosion",
+      "Investigate food, shelter, water and habitat connectivity",
+      "Include invertebrates, juvenile animals and undetected species"
+    ],
+    "missingStakeholders": [
+      "Soil biota and undetected species",
+      "Local land users whose views have not been collected"
+    ],
+    "id": "opt-B",
+    "name": "Assisted ecological restoration",
+    "shortLabel": "Assisted ecological restoration",
+    "color": "#4ade80",
+    "managementIntensity": "Targeted",
+    "description": "Consider targeted erosion control and habitat protection only where field evidence supports them. Native planting is one possible measure if regeneration is inadequate; it is not a default.",
+    "potentialBenefits": [
+      "Targeted erosion control may protect aquatic habitat",
+      "Protecting refuge patches may preserve shelter and movement routes"
+    ],
+    "potentialHarms": [
+      "Ground works can harm soil biota and nesting animals",
+      "Planting may fail under drought; barriers may obstruct wildlife"
+    ],
+    "inappropriate": "May be inappropriate where recovery is already adequate or disturbance costs exceed expected benefits.",
+    "reviewRequired": "Qualified ecological and animal welfare review before intervention. Check landowner consent and applicable authority permissions; no approval is issued here.",
+    "ethicsFlags": [
+      "Benefits are conditional hypotheses, not measured impacts",
+      "No aggregate welfare score or automatic strategy selection"
+    ],
+    "affectedStakeholders": [
+      {
+        "group": "Iberian Lynx",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Bonelli's Eagle",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Ocellated Lizard",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Iberian Midwife Toad",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Red Deer",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Pollinators",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      }
+    ]
+  },
+  {
+    "timeframe": "Unknown — requires baseline surveys and repeated monitoring",
+    "cost": "Not estimated",
+    "evidence": {
+      "strength": "Unvalidated demonstration; no site-specific supporting evidence",
+      "sources": [
+        "src-1"
       ],
-      missingStakeholders: ["Soil biota affected by partial replanting (gap)", "Invertebrate species in firebreak corridors affected by management (gap)", "Traditional ecological knowledge holders not consulted (gap)"],
-      evidence: { strength: "Moderate (mosaic management has ecological support; site-specific evidence absent)", sources: ["src-1", "src-2", "src-3"], keyUncertainties: ["Optimal mosaic proportions for this specific landscape unknown", "Herbicide effects on amphibians in firebreak corridors not assessed", "Coordination costs and implementation risks not quantified"] },
-      fieldChecksNeeded: ["Pre-intervention baseline surveys for all focal species", "Water quality monitoring at supplemented sites", "Vegetation recovery monitoring in all three zone types", "Camera-trap network deployment and data review", "Annual stakeholder review meetings with documented outcomes"],
-      ethicsFlags: ["Herbicide use in firebreaks requires explicit welfare impact assessment for amphibians", "Most balanced across species groups, but coordination complexity may lead to implementation gaps"],
+      "keyUncertainties": [
+        "Current occupancy, welfare and habitat condition are unknown",
+        "Effects depend on drought, soil, timing and local recovery"
+      ]
     },
-  ],
+    "fieldChecksNeeded": [
+      "Survey vegetation recovery and erosion",
+      "Investigate food, shelter, water and habitat connectivity",
+      "Include invertebrates, juvenile animals and undetected species"
+    ],
+    "missingStakeholders": [
+      "Soil biota and undetected species",
+      "Local land users whose views have not been collected"
+    ],
+    "id": "opt-C",
+    "name": "Active habitat restoration",
+    "shortLabel": "Active habitat restoration",
+    "color": "#c084fc",
+    "managementIntensity": "Higher",
+    "description": "Evaluate more extensive habitat work only if surveys demonstrate a need. Compare measures against natural recovery; agree timing, monitoring and stopping criteria with qualified ecologists.",
+    "potentialBenefits": [
+      "May restore connectivity where severe fragmentation is demonstrated",
+      "Could address persistent habitat loss when lighter measures are insufficient"
+    ],
+    "potentialHarms": [
+      "Machinery and clearing may damage refugia and less visible animals",
+      "Species introductions, feeding or water provisioning create separate disease and welfare risks and are not prescribed here"
+    ],
+    "inappropriate": "May be inappropriate without evidence that lighter interventions are insufficient or where sensitive breeding habitat would be disturbed.",
+    "reviewRequired": "Qualified ecological and animal welfare review before intervention. Check landowner consent and applicable authority permissions; no approval is issued here.",
+    "ethicsFlags": [
+      "Benefits are conditional hypotheses, not measured impacts",
+      "No aggregate welfare score or automatic strategy selection"
+    ],
+    "affectedStakeholders": [
+      {
+        "group": "Iberian Lynx",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Bonelli's Eagle",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Ocellated Lizard",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Iberian Midwife Toad",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Red Deer",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      },
+      {
+        "group": "Pollinators",
+        "welfare": "UNCERTAIN — site evidence required",
+        "notes": "Assess food, water, shelter, breeding and movement before selecting measures."
+      }
+    ]
+  }
+],
 
   multispieciesJustice: {
     description: "Multispecies Justice analysis asks: who benefits, who is harmed, and whose interests are absent or underweighted?",
     analysis: [
       { group: "Iberian Lynx", representation: "High (charismatic flagship)", riskOfHarm: "High", riskOfOmission: "Low" },
-      { group: "Hermann's Tortoise", representation: "Moderate", riskOfHarm: "Very High (very limited escape capacity)", riskOfOmission: "Moderate" },
-      { group: "Mallorcan Midwife Toad", representation: "Low — aquatic stage invisible in standard surveys", riskOfHarm: "High", riskOfOmission: "HIGH — amphibians systematically underrepresented" },
+      { group: "Ocellated Lizard", representation: "Moderate", riskOfHarm: "Very High (very limited escape capacity)", riskOfOmission: "Moderate" },
+      { group: "Iberian Midwife Toad", representation: "Low — aquatic stage invisible in standard surveys", riskOfHarm: "High", riskOfOmission: "HIGH — amphibians systematically underrepresented" },
       { group: "Pollinators", representation: "Very Low — often entirely omitted", riskOfHarm: "High", riskOfOmission: "VERY HIGH — almost never included in fire-recovery plans" },
       { group: "Raptors", representation: "High", riskOfHarm: "Moderate", riskOfOmission: "Low" },
       { group: "Red Deer", representation: "Moderate–High (economic advocates)", riskOfHarm: "Low–Moderate", riskOfOmission: "Low" },
@@ -306,3 +455,14 @@ const SCENARIO = {
 };
 
 if (typeof module !== "undefined") module.exports = SCENARIO;
+
+SCENARIO.meta.dataVersion = "0.2-prototype";
+SCENARIO.focalSpecies.forEach(species => {
+  species.evidenceKind = "demonstration";
+  species.note = "Hypothetical demonstration example; regional plausibility is not verified site occupancy. No real observation supplied.";
+  Object.values(species.welfareContext).forEach(domain => {
+    domain.evidenceType = "Demonstration hypothesis";
+    domain.uncertainty = "High — no site-specific evidence";
+    domain.detail = "Hypothetical concern, not an observed impact: " + domain.detail;
+  });
+});
