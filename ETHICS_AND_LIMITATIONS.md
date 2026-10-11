@@ -1,23 +1,13 @@
 # Ethics and limitations
 
-## Animal welfare
+ANWE supports human deliberation about ecosystem restoration and individual animal welfare. It does not select a winner, certify a reviewer, issue legal permission or equate vegetation greenness with wellbeing. Passive recovery, assisted regeneration and active intervention each have conditional benefits, harms and circumstances in which they are inappropriate. Planting is not a default recommendation.
 
-Individual animals matter alongside species and habitat outcomes. Examine food, water, shelter, breeding, movement and harm caused by interventions. Include invertebrates, soil organisms, juveniles and species missing from surveys. A low or absent record count is not proof of absence. No aggregate score hides harm to a less visible group. Hypothetical concern badges illustrate questions to investigate; they are not measured suffering.
+The welfare guide covers mammals, birds, reptiles, amphibians, invertebrates and soil biota through the Five Domains. Guilds are hypothetical review prompts, not verified species presence. Soil biota are an ecological grouping; evidence about sentience and welfare varies and should not be assumed uniform. Nutrition, environment, health, behaviour and mental-state assessments remain unknown without adequate evidence. Regional occurrence records do not establish occupancy, absence, abundance or injury. Vegetation indices do not measure pain, mortality, soil moisture or habitat suitability.
 
-## Human oversight
+Treat field assessment, community consultation, nonhuman interests, displacement, restoration disturbance and uncertainty as matters for explicit review. Human convenience or simplified aggregate scores must not conceal potential harm to individuals. The checklist starts unvalidated and cannot certify compliance. Local reviewer names and qualifications are unverified; no signature is verified.
 
-No option is recommended automatically. Reviewers can defer decisions, challenge individual assumptions, override assessments, attach evidence as text and explain selection/rejection. No qualified-user authentication exists: names, roles and supporting evidence are self-entered and unverified. Saving records no official sign-off or environmental authorisation. Local browser records are editable demonstration drafts, not immutable or verified audit records. Export preserves the current draft and caveats. Checklist overrides remain in memory for the session.
+The official CEMS extent is an acquisition-specific observation generalised for display. EFFIS historical severity is absent. Regional raster statistics are not clipped to the fire polygon. Conservative masking can omit dark burned ground; cloud cover and phenology complicate comparisons. June 2023 images can include effects of the separate July 2022 wildfire. No field calibration or causal inference has been performed.
 
-## Evidence and uncertainty
+All GBIF coordinates are withheld to reduce sensitive-location risk, although taxonomy and dates may still carry information. Provider licences and record quality are preserved. AI answers are drafts: numerical/reference validation cannot establish ecological truth. Disclose when a source or analysis is missing and retain uncertainty instead of inventing values.
 
-Environmental geometry, assessments and species examples are demonstrations. Sources and dates are visible. There are zero verified species observations, zero modelled habitat occupancy results and no real satellite imagery. General regional plausibility does not establish current site occupancy. Future occurrence records must retain age, coordinate precision and sampling bias; even a verified historical observation cannot establish occupancy today. Sensitive locations must not be published at fine resolution. Fictional legal conservation statuses were removed.
-
-## GIS and AI
-
-Leaflet visualises WGS84 polygons with ordinary GIS. No NDVI, NBR or dNBR calculations are performed. Valid future calculations require comparable imagery, cloud/shadow checks, documented processing and expert interpretation. No AI model is connected. Current explanations and reports are predefined text combined with the user's record. Future AI may draft explanations or identify questions for expert review; it must preserve provenance, expose uncertainty and cannot authorise restoration.
-
-## Ecological and legal scope
-
-Natural regeneration, targeted assistance and more extensive restoration are conditional alternatives. Tree planting is not a default. Feeding, water provision, translocation, clearing and barriers can create disease, entrapment, disturbance or habitat risks. Do not apply them without site-specific review. The prototype makes no finding about land ownership, designation, permissions or legal obligations. Real action requires qualified ecological and welfare advice and applicable permissions from the appropriate parties. No artificial numerical benefit, fixed planting fraction or recovery forecast is supplied.
-
-The map is a teaching case, not a fire reconstruction. No hectares are calculated from its hand-drawn perimeter. Basemap availability and geospatial context do not validate ecological claims. Local storage can fail or be cleared; exports and records provide no identity verification or secure persistence.
+Saved review records stay in browser local storage. AI turns stay only in the current session. Exports contain the current draft, sources, uncertainties and AI outputs separately; exported files may contain reviewer names or user-entered notes. The platform has no shared audit log, verified expert accounts, legal workflow or automatic interventions.

@@ -20,6 +20,7 @@ const STATE = {
   activeSpeciesTab: 0,
   compareView: "side-by-side",
   expertRecord: {
+    evidenceVersion: "",
     supportingEvidence: "",
     reviewer: "",
     date: new Date().toISOString().split("T")[0],
@@ -138,7 +139,9 @@ function showScreen(screenId) {
 
   // Update breadcrumb
   const labels = {
-    "case-overview": "Map & environmental context",
+    "case-overview": "Explore wildfire",
+    "ecological-evidence": "Ecological evidence",
+    "ai-assistant": "AI Ecological Assistant",
     "restoration-summary": "Restoration summary",
     "welfare-context": "Animal Welfare Context",
     "compare-pathways": "Compare Pathways",
@@ -286,7 +289,7 @@ function drawHabitatMap() {
 
   // Species refugia markers (coarse — no precise GPS)
   const refugia = [
-    { x: 0.62, y: 0.2, emoji: "🐆", label: "Lynx refugium" },
+    { x: 0.62, y: 0.2, emoji: "🐾", label: "Hypothetical mammal refuge" },
     { x: 0.8, y: 0.6, emoji: "🦎", label: "Lizard refuge" },
     { x: 0.5, y: 0.72, emoji: "🐸", label: "Amphibian pool" },
     { x: 0.7, y: 0.3, emoji: "🦅", label: "Raptor nest zone" },
@@ -410,7 +413,7 @@ function renderWelfareDetail(index) {
           </div>
         </div>
         <div style="margin-left:auto;">
-          <span class="badge badge-synthetic" aria-label="Protection status is fictional">${escapeHtml(sp.protectionStatus)}</span>
+          <span class="badge badge-synthetic" aria-label="Conservation and legal status not inferred">${escapeHtml(sp.protectionStatus)}</span>
         </div>
       </div>
 
@@ -866,7 +869,7 @@ function renderExpertReview() {
       <div class="form-group">
         <label class="form-label" for="override-assessments">Overridden assessments (specify original → your override)</label>
         <textarea id="override-assessments" rows="3"
-                  placeholder="e.g. 'Iberian Lynx / Breeding / HIGH CONCERN → CRITICAL (immediate intervention needed)'"
+                  placeholder="e.g. 'Amphibians / Breeding / UNKNOWN → needs seasonal field survey'"
                   oninput="STATE.expertRecord.overriddenAssessments=this.value">${escapeHtml(STATE.expertRecord.overriddenAssessments)}</textarea>
       </div>
     </div>
@@ -911,13 +914,13 @@ function renderExpertReview() {
     </div>
     <!-- Sign-off and export -->
     <div class="decision-box">
-      <h3 style="margin-bottom:12px;">Human review · local demonstration record</h3>
+      <h3 style="margin-bottom:12px;">Human review · local prototype record</h3>
       <div class="callout callout-danger" style="margin-bottom:16px;">
         <span class="callout-icon" aria-hidden="true">⚠️</span>
         <div style="font-size:0.8rem;">
-          When saving this demonstration assessment, record that: (1) you have reviewed the tool's assessments critically;
+          When saving this prototype assessment, record that: (1) you have reviewed the tool's assessments critically;
           (2) you take responsibility for the decision rationale recorded above;
-          (3) you understand this is a <strong>prototype with unverified synthetic data</strong> and
+          (3) you understand this is a <strong>prototype with mixed evidence and unvalidated hypotheses</strong> and
           the tool has NOT been validated for this or any use case;
           (4) management instructions will NOT be issued automatically from this record.
         </div>
@@ -945,7 +948,7 @@ function saveExpertRecord() {
 function clearRecord() {
   if (!confirm("Clear all review data? This cannot be undone.")) return;
   STATE.expertRecord = {
-    supportingEvidence: "", reviewer: "", date: new Date().toISOString().split("T")[0],
+    evidenceVersion: "", supportingEvidence: "", reviewer: "", date: new Date().toISOString().split("T")[0],
     preferredOption: "", rationale: "", challengedItems: "",
     unresolvedRisks: "", additionalNotes: "", overriddenAssessments: "",
     signedOff: false, savedAt: null,
@@ -1026,7 +1029,7 @@ function renderJusticeTable() {
         <div class="callout callout-warning" style="margin-top:8px;">
           <span class="callout-icon" aria-hidden="true">🐸</span>
           <div>
-            <strong>Iberian Midwife Toad</strong> has a HIGH risk of omission due to its cryptic aquatic larval stage
+            <strong>Amphibians</strong> has a HIGH risk of omission due to its cryptic aquatic larval stage
             being invisible in standard visual surveys. This highlights a systematic data gap.
           </div>
         </div>
@@ -1136,13 +1139,14 @@ function saveChecklistNotes(event) {
 function exportRecord() {
   const record = {
     exportedAt: new Date().toISOString(),
-    toolVersion: "0.2-prototype",
-    recordStatus: "Local demonstration draft; no verified sign-off or authority approval",
-    geography: DEMO_GEO,
+    toolVersion: "3.0-prototype",
+    liveEvidenceAndAI: liveReport(),
+    recordStatus: "Local prototype draft; no verified sign-off or authority approval",
+    geography: STUDY_AREA,
     evidenceSources: SCENARIO.caseOverview.evidenceSources,
     restorationAlternatives: SCENARIO.recoveryPathways,
     restorationSummary: restorationSummary(),
-    dataStatus: "SYNTHETIC / ILLUSTRATIVE — NOT VERIFIED",
+    dataStatus: "MIXED — real source records, derived outputs when available, unvalidated hypotheses",
     scenario: {
       id: SCENARIO.meta.id,
       label: SCENARIO.meta.label,
@@ -1151,7 +1155,7 @@ function exportRecord() {
     expertReview: STATE.expertRecord,
     checklistOverrides: STATE.checklistOverrides,
     checklistReviewerNotes: STATE.checklistReviewerNotes,
-    warning: "This export is from a prototype tool with unverified synthetic data. It has not been independently validated. Do NOT use for real management decisions.",
+    warning: "This export is from a prototype tool with mixed evidence and unvalidated hypotheses. It has not been independently validated. Do NOT use for real management decisions.",
   };
 
   const blob = new Blob([JSON.stringify(record, null, 2)], { type: "application/json" });

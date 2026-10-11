@@ -1,17 +1,11 @@
-# Future roadmap
+# Remaining work
 
-## Implemented
+1. Validate authenticated CDSE processing and actual OpenAI responses with user-provided local credentials. Review masked raster coverage and qualitative answer quality with ecological experts. Public source retrieval and mocked provider tests cannot establish those results.
+2. Obtain authorised historical EFFIS perimeter/severity data, preserve its licence and compare source dates with CEMS observations. Never substitute an invented outline.
+3. Move analysis to a suitable local equal-area/projected grid, clip statistics to a reviewed acquisition-specific extent, validate cloud/shadow masks, quantify uncertainty and benchmark alternative acquisition dates. Export analysis rasters through a deliberate reviewed download route.
+4. Add field observations, habitat surveys and taxonomist-reviewed native/protected/sensitive-species classifications. Record observation effort and time instead of deriving current occupancy from GBIF.
+5. Conduct expert AI evaluations covering harmful restoration advice, qualitative hallucinations, missing-data reasoning, source selection and welfare conflicts. Current schema tests establish format/reference checks only.
+6. Add authenticated expert review, consent, versioned persistent evidence/report archives and real approval records if required by a deployment. Current browser saves are unverified drafts.
+7. Before hosting, add production authentication, secrets management, provider-independent spending enforcement, TLS, monitoring and accessibility audit. The current server is designed for localhost.
 
-Existing HTML/CSS/JavaScript stack retained; interactive Leaflet map of Spain; selectable fictional Sierra Morena perimeter; illustrative severity, vegetation and refuge layers with provenance; retained schematic and welfare-domain exploration; three qualitative strategies in existing comparison views; inappropriate situations and human review requirements; local expert record save/restore; challenges, evidence and rationale; text summary and expanded JSON export; multispecies justice and ethics checklist; provider registry with explicit unavailable/error handling; automated checks.
-
-## Priorities
-
-1. **Scientific validation:** work with restoration ecologists and land managers to validate the teaching content, welfare questions and workflow. Collect dated baseline surveys and establish monitoring and stopping criteria before discussing real interventions.
-2. **Verified geospatial case:** obtain documented fire boundaries and imagery; implement quality-controlled GIS processing and source/version metadata. Validate spatial alignment and keep demonstrations separate from real data.
-3. **Biodiversity and welfare evidence:** integrate dated observations and habitat datasets, preserving uncertainty, bias and sensitive-location protection. Validate species-specific welfare assessments with qualified experts.
-4. **Trustworthy reviews:** add backend records, authentication and reviewer qualification checks, revision history, access controls, secure evidence attachments and independent review. Separate organisational decisions from statutory permissions.
-5. **Usability validation:** test with the two primary user groups, including non-specialist terminology, keyboard and screen-reader use, mobile layouts and offline/error states. Add simplified read-only views only where a demonstrated need exists.
-6. **Operational data:** add documented terrain, soil and weather adapters through a backend where secrets or service restrictions require it. Confirm licences and access before implementation.
-7. **Optional AI research:** only after validated evidence is available, evaluate source-grounded explanations and draft reports. Measure unsupported claims, omissions and reviewer correction rates. Keep expert control; no automated prescriptions.
-
-Unimplemented: actual imagery, protected areas, verified biodiversity observations, habitat models, measured ecological indices, persistent multi-user records, identity verification and AI. A working map or planned-provider catalogue is not an environmental data integration.
+No automatic restoration action, site-specific species mortality, quantitative soil-moisture estimate or legal authorisation is implemented.
