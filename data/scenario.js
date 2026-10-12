@@ -1,4 +1,4 @@
-/* Mixed real evidence is loaded by the backend; these pathways and guild questions are authored hypotheses. */
+/* Real source evidence remains separate from authored conditional assessments. */
 const SCENARIO = {
   "meta": {
     "id": "culebra-june-2022",
@@ -6,7 +6,7 @@ const SCENARIO = {
     "status": "Real event · observations / derived data / hypotheses distinguished",
     "jurisdiction": "Zamora, Castilla y León, Spain",
     "createdDate": "2026-10-11",
-    "dataVersion": "3.0-prototype",
+    "dataVersion": "4.0-prototype",
     "disclaimer": "Documented fire and retrieved records do not establish current wildlife occupancy or welfare. Model interpretations and restoration choices require expert review; no legal authorisation is issued."
   },
   "caseOverview": {
@@ -417,7 +417,39 @@ const SCENARIO = {
           "welfare": "UNCERTAIN — field evidence required",
           "notes": "Consider individuals and less visible life stages; possible disturbance and habitat effects require review."
         }
-      ]
+      ],
+      "designForValues": {
+        "Animal welfare": {
+          "Shelter": "May retain surviving cover and refuges; current refuge use unknown.",
+          "Food": "Food resources and affected animal diets are unknown; survey before changes.",
+          "Movement": "Connectivity and use of movement routes are unknown; identify routes before work.",
+          "Breeding habitat": "Breeding sites and timing are unknown; verify seasonal restrictions in the field."
+        },
+        "Ecological recovery": {
+          "Vegetation recovery": "Monitor existing vegetation response; spectral indices alone do not establish recovery.",
+          "Habitat structure": "Compare open habitat and cover requirements; site-specific needs unknown.",
+          "Regeneration": "Natural regeneration may be adequate; intervene only after verified need.",
+          "Soil and erosion concerns": "Survey erosion and soil disturbance risk; no calibrated soil-moisture data."
+        },
+        "Transparency": {
+          "Supporting data": "cems-EMSR580-event",
+          "Assumptions": "Potential impacts are authored hypotheses; current occupancy is unknown.",
+          "Methodology": "Conditional comparison; no predictive habitat or mortality model.",
+          "Evidence provenance": "CEMS/CDSE/GBIF source dates and licences are separately recorded."
+        },
+        "Uncertainty": {
+          "Evidence availability": "Authored conditional pathway; site impacts unvalidated",
+          "Data limitations": "Historical occurrences and spectral change cannot establish animal wellbeing.",
+          "Unknown impacts": "Site-specific benefits and harms have not been field-validated.",
+          "Required field validation": "Survey vegetation recovery and erosion; Investigate shelter, food, water and habitat connectivity; Include juveniles, invertebrates, soil organisms and undetected species"
+        },
+        "Accountability": {
+          "Expert review status": "Unreviewed draft",
+          "Reviewer justification": "Not recorded",
+          "Pending decisions": "No strategy selected",
+          "Further approval necessary": "Yes. Qualified review, landowner consent and applicable permissions; no action authorised."
+        }
+      }
     },
     {
       "timeframe": "Unknown — requires baseline surveys and repeated monitoring",
@@ -493,7 +525,39 @@ const SCENARIO = {
           "welfare": "UNCERTAIN — field evidence required",
           "notes": "Consider individuals and less visible life stages; possible disturbance and habitat effects require review."
         }
-      ]
+      ],
+      "designForValues": {
+        "Animal welfare": {
+          "Shelter": "Work may alter cover or disturb occupied refuges; survey first.",
+          "Food": "Food resources and affected animal diets are unknown; survey before changes.",
+          "Movement": "Connectivity and use of movement routes are unknown; identify routes before work.",
+          "Breeding habitat": "Breeding sites and timing are unknown; verify seasonal restrictions in the field."
+        },
+        "Ecological recovery": {
+          "Vegetation recovery": "Monitor existing vegetation response; spectral indices alone do not establish recovery.",
+          "Habitat structure": "Compare open habitat and cover requirements; site-specific needs unknown.",
+          "Regeneration": "Natural regeneration may be adequate; intervene only after verified need.",
+          "Soil and erosion concerns": "Survey erosion and soil disturbance risk; no calibrated soil-moisture data."
+        },
+        "Transparency": {
+          "Supporting data": "cems-EMSR580-event",
+          "Assumptions": "Potential impacts are authored hypotheses; current occupancy is unknown.",
+          "Methodology": "Conditional comparison; no predictive habitat or mortality model.",
+          "Evidence provenance": "CEMS/CDSE/GBIF source dates and licences are separately recorded."
+        },
+        "Uncertainty": {
+          "Evidence availability": "Authored conditional pathway; site impacts unvalidated",
+          "Data limitations": "Historical occurrences and spectral change cannot establish animal wellbeing.",
+          "Unknown impacts": "Site-specific benefits and harms have not been field-validated.",
+          "Required field validation": "Survey vegetation recovery and erosion; Investigate shelter, food, water and habitat connectivity; Include juveniles, invertebrates, soil organisms and undetected species"
+        },
+        "Accountability": {
+          "Expert review status": "Unreviewed draft",
+          "Reviewer justification": "Not recorded",
+          "Pending decisions": "No strategy selected",
+          "Further approval necessary": "Yes. Qualified review, landowner consent and applicable permissions; no action authorised."
+        }
+      }
     },
     {
       "timeframe": "Unknown — requires baseline surveys and repeated monitoring",
@@ -569,56 +633,41 @@ const SCENARIO = {
           "welfare": "UNCERTAIN — field evidence required",
           "notes": "Consider individuals and less visible life stages; possible disturbance and habitat effects require review."
         }
-      ]
+      ],
+      "designForValues": {
+        "Animal welfare": {
+          "Shelter": "Work may alter cover or disturb occupied refuges; survey first.",
+          "Food": "Food resources and affected animal diets are unknown; survey before changes.",
+          "Movement": "Connectivity and use of movement routes are unknown; identify routes before work.",
+          "Breeding habitat": "Breeding sites and timing are unknown; verify seasonal restrictions in the field."
+        },
+        "Ecological recovery": {
+          "Vegetation recovery": "Monitor existing vegetation response; spectral indices alone do not establish recovery.",
+          "Habitat structure": "Compare open habitat and cover requirements; site-specific needs unknown.",
+          "Regeneration": "Natural regeneration may be adequate; intervene only after verified need.",
+          "Soil and erosion concerns": "Survey erosion and soil disturbance risk; no calibrated soil-moisture data."
+        },
+        "Transparency": {
+          "Supporting data": "cems-EMSR580-event",
+          "Assumptions": "Potential impacts are authored hypotheses; current occupancy is unknown.",
+          "Methodology": "Conditional comparison; no predictive habitat or mortality model.",
+          "Evidence provenance": "CEMS/CDSE/GBIF source dates and licences are separately recorded."
+        },
+        "Uncertainty": {
+          "Evidence availability": "Authored conditional pathway; site impacts unvalidated",
+          "Data limitations": "Historical occurrences and spectral change cannot establish animal wellbeing.",
+          "Unknown impacts": "Site-specific benefits and harms have not been field-validated.",
+          "Required field validation": "Survey vegetation recovery and erosion; Investigate shelter, food, water and habitat connectivity; Include juveniles, invertebrates, soil organisms and undetected species"
+        },
+        "Accountability": {
+          "Expert review status": "Unreviewed draft",
+          "Reviewer justification": "Not recorded",
+          "Pending decisions": "No strategy selected",
+          "Further approval necessary": "Yes. Qualified review, landowner consent and applicable permissions; no action authorised."
+        }
+      }
     }
   ],
-  "multispieciesJustice": {
-    "description": "Multispecies Justice analysis asks: who benefits, who is harmed, and whose interests are absent or underweighted?",
-    "analysis": [
-      {
-        "group": "Mammals",
-        "representation": "Representation requires consultation and field review",
-        "riskOfHarm": "Unknown at this site",
-        "riskOfOmission": "Potential ethical concern; not a measured site finding"
-      },
-      {
-        "group": "Birds",
-        "representation": "Representation requires consultation and field review",
-        "riskOfHarm": "Unknown at this site",
-        "riskOfOmission": "Potential ethical concern; not a measured site finding"
-      },
-      {
-        "group": "Reptiles",
-        "representation": "Representation requires consultation and field review",
-        "riskOfHarm": "Unknown at this site",
-        "riskOfOmission": "Potential ethical concern; not a measured site finding"
-      },
-      {
-        "group": "Amphibians",
-        "representation": "Representation requires consultation and field review",
-        "riskOfHarm": "Unknown at this site",
-        "riskOfOmission": "Potential ethical concern; not a measured site finding"
-      },
-      {
-        "group": "Invertebrates",
-        "representation": "Representation requires consultation and field review",
-        "riskOfHarm": "Unknown at this site",
-        "riskOfOmission": "Potential ethical concern; not a measured site finding"
-      },
-      {
-        "group": "Soil biota",
-        "representation": "Representation requires consultation and field review",
-        "riskOfHarm": "Unknown at this site",
-        "riskOfOmission": "Potential ethical concern; not a measured site finding"
-      },
-      {
-        "group": "Undetected species and local land users",
-        "representation": "Not established",
-        "riskOfHarm": "Unknown",
-        "riskOfOmission": "Missing records and missing consultation require investigation"
-      }
-    ]
-  },
   "evaluationChecklist": [
     {
       "id": "chk-1",
@@ -665,7 +714,7 @@ const SCENARIO = {
     {
       "id": "chk-7",
       "category": "Species Representation",
-      "item": "Multispecies Justice analysis identifies whose interests are missing",
+      "item": "Design for Values traces stakeholder concerns to requirements and evaluation",
       "passed": false,
       "notes": "Requires reviewer verification against the current live evidence and application behaviour; not auto-certified."
     },

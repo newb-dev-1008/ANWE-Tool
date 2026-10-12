@@ -1,5 +1,5 @@
 /* Live evidence, satellite previews, processing and model drafts extend existing screens. */
-const LIVE = {status:null, snapshot:null, catalogue:null, biodiversity:null, analysis:null, aiTurns:[], csrf:null, boundary:null};
+const LIVE = {status:null, snapshot:null, catalogue:null, biodiversity:null, comparison:null, analysis:null, aiTurns:[], csrf:null, boundary:null};
 
 async function api(path, body, timeout=180000) {
   const controller = new AbortController();
@@ -26,6 +26,7 @@ function sourceLink(url,label) {
 
 async function refreshEvidence() {
   LIVE.snapshot = await api('/api/evidence');
+  if(LIVE.snapshot.sources?.comparison) {LIVE.comparison=LIVE.snapshot.sources.comparison;renderComparison();}
   document.getElementById('live-evidence-count').textContent = `${LIVE.snapshot.records.length} evidence records · snapshot ${LIVE.snapshot.version}. Record availability is not proof of present animals or site welfare.`;
   const body = LIVE.snapshot.records.map(record => `<tr><td><span class="badge">${escapeHtml(record.kind)}</span></td><td>${sourceLink(record.url,record.source)}<br><small>${escapeHtml(record.datasetId)}</small></td><td>${escapeHtml(record.date)}</td><td>${escapeHtml(record.coverage)}</td><td>${escapeHtml(record.method)}<br>${escapeHtml(record.limitations)}</td></tr>`).join('');
   document.getElementById('live-evidence-table').innerHTML = `<div class="table-wrapper"><table><caption>Evidence provenance; imported reviewer files are excluded from official facts</caption><thead><tr><th>Kind</th><th>Source / ID</th><th>Date</th><th>Coverage</th><th>Method / limitations</th></tr></thead><tbody>${body}</tbody></table></div>`;
@@ -149,20 +150,49 @@ async function askAssistant(event) {
   button.disabled=true;document.getElementById('ai-status').textContent='Asking configured model using the current server-owned evidence snapshot…';
   try {
     await refreshEvidence();
-    const answer=await api('/api/ai',{question,evidenceVersion:LIVE.snapshot.version},120000);
+    const answer=await api('/api/ai',{question,evidenceVersion:LIVE.snapshot.version},240000);
     LIVE.aiTurns.push(answer);input.value='';renderAIAnswers();
-    document.getElementById('ai-status').textContent='Model response received. Factual panels reproduce source records; narrative remains an unvalidated AI draft.';
+    document.getElementById('ai-status').textContent='Response received. Read the interpretation below; expand sources to inspect the supporting evidence.';
   } catch(error) {document.getElementById('ai-status').textContent=error.message;}
   finally {button.disabled=!LIVE.status?.ai.enabled;}
 }
 
+function evidenceLabel(field) {
+  const labels={before:'Before the fire',after:'After-start window',burned:'mapped burned area',buffer:'surrounding buffer',uncertain:'uncertain locations',records:'retrieved observations',distinctSpecies:'distinct recorded species',groups:'taxonomic groups',Aves:'birds',Mammalia:'mammals',Amphibia:'amphibians',Reptilia:'reptiles',Insecta:'insects',Arachnida:'arachnids',eventStart:'Fire start',activationDate:'Mapping activation date',acquisitionDate:'Satellite acquisition date',recordedTaxon:'Recorded animal',coordinateUncertaintyInMeters:'Location uncertainty (metres)',mean:'mean',min:'minimum',max:'maximum',validPixels:'valid pixels',totalPixels:'total pixels',preNDVI:'Pre-fire NDVI',postNDVI:'Post-image NDVI',dNBR:'dNBR',tileCloudCover:'Tile-wide cloud cover (%)'};
+  return String(field).split('.').map(part=>labels[part] || part.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/_/g,' ')).join(' — ');
+}
+
+function readableEvidence(value,path='') {
+  if(value && typeof value==='object' && !Array.isArray(value))return Object.entries(value).map(([key,item])=>readableEvidence(item,path?path+'.'+key:key)).join('');
+  const display=value===null || value===undefined?'Not available':Array.isArray(value)?value.join('; '):typeof value==='boolean'?(value?'Yes':'No'):String(value);
+  return `<p><strong>${escapeHtml(evidenceLabel(path))}:</strong> ${escapeHtml(display)}</p>`;
+}
+
 function renderAIAnswers() {
-  document.getElementById('ai-conversation').innerHTML=LIVE.aiTurns.map(turn=>`<article class="card ai-turn"><h3>${escapeHtml(turn.question)}</h3><p class="provenance">Model ${escapeHtml(turn.model)} · ${escapeHtml(turn.createdAt)} · Evidence ${escapeHtml(turn.evidenceVersion)} · ${escapeHtml(turn.reviewStatus)}</p>
-    <h4>Observed / derived records selected by the model</h4>${turn.facts.map(f=>`<div class="evidence-fact"><strong>${escapeHtml(f.kind)} · ${sourceLink(f.url,f.id)}</strong><pre>${escapeHtml(JSON.stringify(f.measurements,null,2))}</pre><p>${escapeHtml(f.limitations)}</p></div>`).join('') || '<p>No factual source selected; no finding established.</p>'}
-    <h4>Hypothetical interpretations</h4><ul>${turn.hypotheses.map(t=>`<li>${escapeHtml(t)}</li>`).join('')}</ul>
-    <h4>Unknown / missing evidence</h4><ul>${turn.unknowns.map(t=>`<li>${escapeHtml(t)}</li>`).join('')}</ul>
-    <div class="comparison-grid">${turn.pathways.map(p=>`<div class="card"><h4>${escapeHtml(p.name)}</h4><p><strong>Conditional benefits:</strong> ${escapeHtml(p.benefits.join(' '))}</p><p><strong>Possible harms:</strong> ${escapeHtml(p.harms.join(' '))}</p><p><strong>Field checks:</strong> ${escapeHtml(p.fieldChecks.join(' '))}</p><p><strong>When inappropriate:</strong> ${escapeHtml(p.inappropriate)}</p><p>Evidence references: ${escapeHtml(p.evidenceIds.join(', ') || 'None')}</p></div>`).join('')}</div>
-    <p>Supporting sources: ${turn.supportingSources.map(s=>sourceLink(s.url,s.id)).join(' · ') || 'No source references'}</p></article>`).join('');
+  const paragraphs=items=>(items || []).map(text=>`<p>${escapeHtml(text)}</p>`).join('');
+  document.getElementById('ai-conversation').innerHTML=LIVE.aiTurns.map(turn=>{
+    const sources=turn.supportingSources || turn.facts || [];
+    const facts=(turn.sourceMeasurements || []).map(m=>{
+      const match=m.field.match(/^(before|after)\.(burned|buffer|uncertain)\.(records|distinctSpecies)$/);
+      let sentence;
+      if(match) {
+        const period=match[1]==='before'?'Before the fire':'In the after-start window';
+        const zone={burned:'mapped burned area',buffer:'surrounding comparison buffer',uncertain:'records with uncertain locations'}[match[2]];
+        sentence=`${period}, the retrieved sample for the ${zone} contains ${m.value} ${match[3]==='records'?'observations':'distinct recorded species'}.`;
+      } else if(m.field==='eventStart')sentence=`The documented fire start date is ${m.value}.`;
+      else sentence=`The source reports ${evidenceLabel(m.field).toLowerCase()} as ${m.value}.`;
+      const source=sources.find(s=>s.id===m.evidenceId);
+      return escapeHtml(sentence)+(source?' '+sourceLink(source.url,'Source'):'');
+    }).join(' ');
+    const links=[...new Map(sources.map(s=>[s.source,s])).values()].map(s=>sourceLink(s.url,s.source)).join(' · ');
+    return `<article class="ai-turn plain-answer"><p class="user-question">${escapeHtml(turn.question)}</p>
+      <p>${escapeHtml(turn.summary || 'The available evidence supports investigation, with the limitations below.')}</p>
+      ${facts?`<p>${facts}</p>`:''}
+      ${paragraphs(turn.hypotheses)}${paragraphs(turn.unknowns)}
+      ${(turn.pathways || []).map(p=>`<p>For ${escapeHtml(p.name.toLowerCase())}, ${escapeHtml((p.benefits || []).join(' '))} ${escapeHtml((p.harms || []).join(' '))} ${escapeHtml(p.inappropriate)} ${escapeHtml((p.fieldChecks || []).join(' '))}</p>`).join('')}
+      ${(turn.valuesAssessment || []).map(v=>`<p>Regarding ${escapeHtml(v.value.toLowerCase())}, ${escapeHtml(v.assessment)} ${escapeHtml((v.fieldChecks || []).join(' '))}</p>`).join('')}
+      <p class="provenance">AI draft; human review required.${links?' Sources: '+links:''}</p></article>`;
+  }).join('');
   document.getElementById('pathway-ai-note').textContent=`${LIVE.aiTurns.length} AI draft(s) available in AI Ecological Assistant. These supplement the authored comparison; neither is a verified intervention finding.`;
 }
 
@@ -177,9 +207,11 @@ async function importPerimeter(event) {
   } catch(error) {status.textContent=error.message;}
 }
 
-function liveReport() {
-  return {case:STUDY_AREA,evidence:LIVE.snapshot,fire:LIVE.status?.fire || null,
-    importedPerimeter:LIVE.importedPerimeter || LIVE.status?.fire?.importedPerimeter || null,
-    biodiversity:LIVE.biodiversity,satelliteCatalogue:LIVE.catalogue,satelliteAnalysis:LIVE.analysis,
+function liveReport(includePrivate=true) {
+  const redact=data=>!data || includePrivate ? data : {...data,metadata:{...data.metadata,reviewer:'Withheld by export privacy settings'}};
+  const fire=LIVE.status?.fire ? {...LIVE.status.fire,importedPerimeter:redact(LIVE.status.fire.importedPerimeter)} : null;
+  return {case:STUDY_AREA,evidence:LIVE.snapshot,fire,
+    importedPerimeter:redact(LIVE.importedPerimeter || LIVE.status?.fire?.importedPerimeter || null),
+    designForValues:DFV,biodiversity:LIVE.biodiversity,biodiversityComparison:LIVE.comparison,satelliteCatalogue:LIVE.catalogue,satelliteAnalysis:LIVE.analysis,
     aiDrafts:LIVE.aiTurns,limitations:'No verified current occupancy, field welfare measurements, reviewer qualification or legal authorisation. User-provided perimeters are not official evidence.'};
 }

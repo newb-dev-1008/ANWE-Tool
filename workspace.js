@@ -62,7 +62,7 @@ function restoreLocalRecord() {
     if (saved.scenarioId !== SCENARIO.meta.id || !saved.expertRecord) throw new Error('Incompatible record');
     // Only recognised fields and primitive values may enter rendering state.
     for (const key of Object.keys(STATE.expertRecord)) {
-      if (typeof saved.expertRecord[key] === 'string') STATE.expertRecord[key] = saved.expertRecord[key];
+      if (typeof saved.expertRecord[key] === 'string' || (key==='approvalConfirmed' && typeof saved.expertRecord[key]==='boolean')) STATE.expertRecord[key] = saved.expertRecord[key];
     }
     document.getElementById('record-notice').textContent = 'Restored a local prototype review from this browser. Reviewer identity and qualifications are unverified.';
   } catch {
@@ -77,6 +77,9 @@ function persistLocalRecord() {
     return;
   }
   STATE.expertRecord.evidenceVersion = LIVE.snapshot?.version || "Not available";
+  if(STATE.expertRecord.reviewStatus==='reviewed' && (!STATE.expertRecord.preferredOption.trim() || STATE.expertRecord.preferredOption==='(not yet decided)' || !STATE.expertRecord.approvalConfirmed)) {
+    status.textContent='A reviewed decision requires a preferred option and explicit human review confirmation. You may save a draft or defer.';return;
+  }
   STATE.expertRecord.savedAt = new Date().toISOString();
   STATE.expertRecord.signedOff = false;
   try {
@@ -88,11 +91,13 @@ function persistLocalRecord() {
   }
 }
 
-function restorationSummary() {
-  const r=STATE.expertRecord, report=liveReport();
+function restorationSummary(includePrivate=true,includeNotes=true) {
+  const r=includePrivate ? {...STATE.expertRecord} : {...STATE.expertRecord,...Object.fromEntries(['reviewer','date','preferredOption','rationale','challengedItems','overriddenAssessments','unresolvedRisks','supportingEvidence','additionalNotes'].map(k=>[k,'Withheld by export privacy settings']))};
+  if(!includeNotes)r.additionalNotes='Withheld by export privacy settings';
+  const report=liveReport(includePrivate);
   const sources=(LIVE.snapshot?.records || []).map(s=>`${s.kind}: ${s.id} · ${s.source} · ${s.date} · ${s.url} · ${s.limitations}`).join('\n');
   const drafts=LIVE.aiTurns.map(turn=>`${turn.question}\nModel ${turn.model}; ${turn.createdAt}; evidence ${turn.evidenceVersion}\n${JSON.stringify(turn,null,2)}`).join('\n\n');
-  return ['ANWE 3.0 — restoration review summary',SCENARIO.meta.label,
+  return ['ANWE 4.0 — Design for Values restoration review summary',SCENARIO.meta.label,
     'Human decision support. No verified current occupancy, field welfare finding, reviewer qualification or official approval.',
     `Case selected this session: ${selectedArea ? 'Yes':'No'}`,
     `Fire geometry: ${LIVE.boundary ? LIVE.boundary.verification : 'Unavailable; no invented perimeter'}`,
@@ -104,6 +109,9 @@ function restorationSummary() {
     `Overrides: ${r.overriddenAssessments || 'None recorded'}`,
     `Unresolved risks: ${r.unresolvedRisks || 'Not recorded; does not imply no risks'}`,
     `Supporting evidence: ${r.supportingEvidence || 'Not supplied'}`,
+    `Accountability: ${reviewState().label}. No action authorised; external approval remains necessary.`,
+    'Design for Values: '+DFV.values.map(v=>v.value+' — '+v.norm+' — '+v.requirement).join('\n'),
+    'GBIF comparison: '+(LIVE.comparison ? JSON.stringify({windows:LIVE.comparison.parameters,before:LIVE.comparison.before,after:LIVE.comparison.after,limitations:LIVE.comparison.limitations}) : 'Not retrieved'),
     `Additional notes: ${r.additionalNotes || 'None'}`,
     `Last local save: ${r.savedAt || 'Unsaved draft'}. Reviewed evidence version: ${r.evidenceVersion || 'Not captured'}; current: ${LIVE.snapshot?.version || 'Unavailable'}`,
     'Restoration alternatives (authored hypotheses): '+JSON.stringify(SCENARIO.recoveryPathways,null,2),
@@ -119,7 +127,8 @@ function viewSummary() {
 }
 
 function exportSummary() {
-  const url = URL.createObjectURL(new Blob([restorationSummary()], {type: 'text/plain;charset=utf-8'}));
+  const consent=exportConsent();
+  const url = URL.createObjectURL(new Blob([restorationSummary(consent.review,consent.notes)], {type: 'text/plain;charset=utf-8'}));
   const link = document.createElement('a');
   link.href = url; link.download = 'ANWE-Culebra-review-summary.txt'; link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);

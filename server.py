@@ -14,15 +14,32 @@ from backend.biodiversity import load_biodiversity
 from backend.satellite import catalogue, run_analysis, sample, cached_analyses, configured as satellite_configured
 from backend.evidence import STORE
 from backend.ai import assess, configured as ai_configured
+from backend.ai import ANSWERS
+from backend.comparison import load_comparison
+from backend.values import FOUNDATION
+from backend.report import make_report
 
 load_env()
 CSRF=secrets.token_urlsafe(32)
 STATIC={'index.html','style.css','app.js','workspace.js','integrations.js','data/scenario.js','data/geography.js','data/providers.js',
-        'vendor/leaflet.js','vendor/leaflet.css'}
+        'vendor/leaflet.js','vendor/leaflet.css','welfare-ai.js','values.js','data/design-values.js','data/design-values.json'}
 IMPORT_LOCK=threading.Lock()
 
 class Handler(BaseHTTPRequestHandler):
     def log_message(self,*args):pass
+
+    def reject_post(self,status,message):
+        # Drain a bounded, already-sent body before closing. Closing with unread data
+        # can reset Windows sockets and hide the intended error response from clients.
+        try:
+            length=int(self.headers.get('Content-Length','0'))
+            if 0<length<=4_000_000:
+                previous=self.connection.gettimeout()
+                self.connection.settimeout(3)
+                try:self.rfile.read(length)
+                finally:self.connection.settimeout(previous)
+        except (ValueError,OSError):pass
+        return self.send(status,{'error':message})
 
     def allowed_host(self):
         return self.headers.get('Host') in {f'localhost:{self.server.server_port}',f'127.0.0.1:{self.server.server_port}'}
@@ -54,6 +71,7 @@ class Handler(BaseHTTPRequestHandler):
                     'satellite':{'processingEnabled':satellite_configured(),'reason':None if satellite_configured() else 'Configure CDSE_CLIENT_ID and CDSE_CLIENT_SECRET for reflectance processing. Public catalogue and quicklooks remain available.'},
                     'fire':fire_status()})
             if path=='/api/evidence':return self.send(200,STORE.snapshot())
+            if path=='/api/values':return self.send(200,FOUNDATION)
             if path=='/api/satellite/analyses':
                 analyses=cached_analyses()
                 if analyses:STORE.put('analysis',analyses[0])
@@ -100,8 +118,8 @@ class Handler(BaseHTTPRequestHandler):
         origin=self.headers.get('Origin')
         if (not self.allowed_host() or self.headers.get('X-ANWE-Token')!=CSRF or
             origin not in [None,f'http://localhost:{port}',f'http://127.0.0.1:{port}']):
-            return self.send(403,{'error':'Request must originate from the local ANWE application.'})
-        if self.headers.get('Content-Type','').split(';')[0]!='application/json':return self.send(415,{'error':'JSON required.'})
+            return self.reject_post(403,'Request must originate from the local ANWE application.')
+        if self.headers.get('Content-Type','').split(';')[0]!='application/json':return self.reject_post(415,'JSON required.')
         try:
             length=int(self.headers.get('Content-Length','0'))
             if not 0<length<=4_000_000:raise ServiceError('Request size must be below 4 MB.',413)
@@ -114,6 +132,27 @@ class Handler(BaseHTTPRequestHandler):
             if path=='/api/satellite/process':
                 data=run_analysis(body.get('preId'),body.get('postId'));STORE.put('analysis',data)
                 return self.send(200,data)
+            if path=='/api/biodiversity/comparison':
+                data=load_comparison(body);STORE.put('comparison',data)
+                return self.send(200,data)
+            if path=='/api/report/pdf':
+                snapshot=STORE.snapshot()
+                if body.get('evidenceVersion')!=snapshot['version']:raise ServiceError('Evidence changed. Refresh before exporting.',409)
+                ids=body.get('responseIds',[])
+                if not isinstance(ids,list) or len(ids)>10 or any(not isinstance(i,str) or i not in ANSWERS for i in ids):
+                    raise ServiceError('AI draft unavailable in this server session. Ask again or export without that draft.',400)
+                include=body.get('includeReview') is True
+                review=body.get('review') if include else None
+                if include:
+                    if not isinstance(review,dict) or any(not isinstance(v,(str,bool,type(None))) for v in review.values()) or any(isinstance(v,str) and len(v)>12000 for v in review.values()):raise ServiceError('Invalid review details.',400)
+                    # Validate the review contract before rendering; never certify qualifications.
+                    from backend.values import review_status
+                    review_status(review,snapshot['version'])
+                label=body.get('publicReviewStatus','Unreviewed draft')
+                if label not in ['Unreviewed draft','Decision deferred','Locally reviewed; identity unverified','Evidence changed; re-review required']:
+                    raise ServiceError('Invalid review label.',400)
+                raw=make_report(snapshot,[ANSWERS[i] for i in ids],review,include,include and body.get('includeNotes') is True,label)
+                return self.send(200,raw,'application/pdf')
             if path=='/api/fire/import':
                 data=validate_import(body)
                 with IMPORT_LOCK:atomic_json(RUNTIME/'reviewer-perimeter.json',data)
@@ -128,7 +167,7 @@ def create_server(port=8080):return ThreadingHTTPServer(('127.0.0.1',port),Handl
 
 if __name__=='__main__':
     server=create_server(int(os.environ.get('PORT','8080')))
-    print(f'ANWE 3.0: http://localhost:{server.server_port}',flush=True)
+    print(f'ANWE 4.0: http://localhost:{server.server_port}',flush=True)
     try:server.serve_forever()
     except KeyboardInterrupt:pass
     finally:server.server_close()

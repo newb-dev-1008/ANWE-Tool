@@ -94,6 +94,17 @@
 .evidence-fact { border-left:3px solid var(--clr-accent); padding:12px; margin:10px 0; }
 .ai-turn { margin:18px 0; line-height:1.7; }
 .ai-turn h4 { margin:16px 0 8px; }
+.readable-answer { line-height:1.8; }
+.readable-answer p { margin:12px 0; }
+.readable-answer h4 { margin-top:26px; }
+.readable-answer h5 { font-size:1rem; margin:20px 0 8px; color:var(--clr-text); }
+.answer-sources { margin-top:28px; padding-top:16px; border-top:1px solid var(--clr-border); }
+.answer-sources summary { cursor:pointer; color:var(--clr-accent); }
+.answer-sources details { margin:14px 0; }
+.answer-citation { font-size:.8rem; white-space:nowrap; }
+.plain-answer { max-width:900px; line-height:1.8; }
+.plain-answer p { margin:16px 0; }
+.plain-answer .user-question { font-weight:700; padding-bottom:12px; border-bottom:1px solid var(--clr-border); }
 .ai-turn ul { padding-left:20px; }
 #screen-ecological-evidence > .card, #screen-case-overview > details { margin:18px 0; }
 #screen-case-overview details form { display:grid; gap:8px; margin-top:12px; }
@@ -917,3 +928,25 @@ tbody tr:hover { background: var(--clr-surface-2); }
   #header .badge-synthetic { display:none; }
   #header .btn { white-space:nowrap; font-size:.7rem; padding:8px; }
 }
+
+/* DfV and biodiversity comparisons retain readable, independent assessments. */
+.values-filters { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:20px 0; }
+.values-filters select { width:auto; max-width:100%; }
+#values-matrix .table-wrapper { overflow:auto; }
+#values-matrix table { min-width:900px; }
+.dfv-pathway { padding:12px; margin:16px 0; border:1px solid var(--clr-border); border-radius:8px; }
+.dfv-pathway summary { cursor:pointer; color:var(--clr-accent); font-weight:700; }
+.dfv-pathway dt { margin-top:10px; font-weight:700; font-size:.8rem; }
+.dfv-pathway dd { font-size:.8rem; color:var(--clr-text-muted); margin:4px 0 10px; }
+#gbif-comparison-form input, #gbif-comparison-form select { margin:8px 0 16px; }
+#gbif-comparison-form > label { display:block; font-size:.85rem; }
+#comparison-buffer { display:block; width:100%; padding:12px 16px; background:var(--clr-surface-2); color:var(--clr-text); border:1px solid var(--clr-border); border-radius:8px; font:inherit; }
+#screen-biodiversity-comparison .card, #values-stakeholders .card { margin:18px 0; }
+.comparison-chart-row { margin:18px 0; }
+.bar-line { display:flex; align-items:center; gap:12px; margin:8px 0; }
+.bar-line > span { width:80px; flex-shrink:0; font-size:.8rem; }
+.bar-track { flex:1; height:14px; background:var(--clr-surface-3); border-radius:4px; overflow:hidden; }
+.bar { height:100%; background:#69bea9; }.bar.after { background:#e69264; }
+#comparison-results details { margin:14px 0; } #comparison-results .table-wrapper { max-height:600px; overflow:auto; }
+#screen-restoration-summary label { display:block; margin:12px 0; }
+#approval-confirmation, #pdf-include-review, #pdf-include-notes { width:18px; height:18px; vertical-align:middle; }

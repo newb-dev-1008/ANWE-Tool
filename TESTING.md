@@ -1,5 +1,39 @@
 # Validation performed
 
+## ANWE 4.1 PDF redesign validation
+
+### Completed live demo
+
+The final PDF includes labelled editorial corrections to historical-presence wording and an unsupported regeneration-rate inference. Original affected model wording is retained as superseded text in Appendix F. A regression test verifies the clarifications and confirms the stored model response is unchanged. Future AI instructions explicitly prohibit these inferences.
+
+The complete browser workflow generated `reports/ANWE_Complete_Demo_Report.pdf` with a real configured `gpt-4.1-mini-2025-04-14` assessment, the existing processed 10 June / 5 July 2022 Sentinel pair, and the dated June 2021 / June 2023 GBIF comparison. All 30 welfare concern popups were checked, matrix filtering worked, and the report downloaded with privacy defaults and no invented expert review. There were no application JavaScript errors. All 28 PDF pages were rendered and visually inspected; text stayed within margins. The output contains seven main pages and 21 appendix pages. Model content remains an unreviewed draft and can contain incorrect interpretations; successful export does not establish ecological accuracy.
+
+All **37 Python and 13 Node tests passed**. The PDF-specific checks cover missing services, optional actual AI drafts, unverified review status, separate privacy consent, changing periods/buffer/counts, species lists longer than 35 entries, source links, unchanged snapshots and rounded main-page values with original precision in the appendix. Tests use explicit fixtures and make no paid AI requests.
+
+The Sierra de la Culebra example was regenerated from existing real cached CEMS, Sentinel and GBIF evidence. It has **six main pages and 18 appendix pages**, with PDF bookmarks. Every page was rendered with Poppler and visually inspected; text bounds, source-owned means, complete species sets and missing-AI status were also checked. The Chrome smoke test verifies downloading the report through the application with privacy defaults. The redesign changes presentation only; ecological calculations and retrieved data remain unchanged.
+
+## ANWE 4.0 workflow review — 12 October 2026
+
+All **33 Python and 13 Node tests passed** on the final review. The current browser smoke test passed with a 16-page PDF. Follow-up browser checks verified all 30 welfare group/domain popups, plain-paragraph AI rendering with no JSON panels, and PDF export without a reviewer even when the initial browser token was stale. These UI checks used explicit rendering fixtures where appropriate; no additional paid model call was made during the final review. Earlier actual model tests remain documented below. The demo guide now follows evidence → values → interpretation → welfare/pathway comparison → optional review → draft report.
+
+## ANWE 4.0 validation — 12 October 2026
+
+**33 Python tests and 10 Node tests passed.** Install `requirements-dev.txt` before running both suites as shown in README.md. Python tests cover source-field measurement/date selection, fabricated values/IDs/fields, malformed responses, all five values, explicit denial versus assertion of approval, one controlled repair and redacted failure logs, missing credentials, period filtering, date precision, same-area/buffer classification, spatial uncertainty, species sets, taxonomic filtering, deduplication, pagination caps, review confirmation/justification, PDF readability/privacy and HTTP report/comparison routes. Node tests preserve existing functionality and cover DfV dimensions, reviewed-save constraints and privacy across exports.
+
+The seven requested example AI questions were exercised against an explicitly mocked provider to verify the request/validation path. This is not evidence of model quality. A separate **real end-to-end browser/model request** asked about recorded species, observation counts and the five values. The actual `gpt-4.1-mini-2025-04-14` response passed validation, selected six source fields (GBIF species/group counts, fire date and an available cached dNBR mean), included five value assessments and three pathways, and appeared in the downloaded PDF. No secrets, internal prompts or raw invalid responses were logged.
+
+Live public GBIF queries returned 395 before and 227 after bounding-box records for the default June windows. Classification and exclusions were displayed separately; see DATA_SOURCES.md. Chrome checks covered matrix filtering (five rows to one), live comparison, mobile width (390 pixels without page overflow), actual AI response and PDF download. No JavaScript exceptions were reported. Generated PDFs opened through PyMuPDF, text/sections/privacy were checked, and rendered map/table pages were visually inspected. Existing cached satellite analysis was available to the app; a new authenticated raster request was not run during this upgrade.
+
+The reusable `tests/browser_smoke.py` also passed against the local server. It checks invalid window rejection without replacing prior results, local reviewed-save requirements, edit invalidation and reload, question preservation using an explicitly simulated UI error, privacy-default PDF download and mobile overflow. That smoke test makes no paid model request. PDF text bounding boxes remained within checked margins and embedded-font output had no Unicode replacement characters. Run `python tests/browser_smoke.py http://localhost:8080` with installed Chrome and `requirements-dev.txt`.
+
+Tests establish implementation behaviour, not ecological correctness, qualified expert identity, legal permission, sampling representativeness or full accessibility compliance. Fire end remains unverified. Previous validation notes below retain their original scope.
+
+## Follow-up: 12 October 2026
+
+Fixed a narrative validation mismatch: digits in source labels such as Sentinel-2 and EMSR580 are identifiers, not numeric ecological claims. The structured-output schema now constrains narrative text at generation time, with explicit exceptions for those source labels. Backend checks still reject unsupported numeric text, inline citations, links and unknown evidence references. A regression test covers allowed labels and rejected numeric claims, dates and fabricated labels. All 14 Python and 8 Node tests passed.
+
+Two actual Responses requests using locally configured credentials completed successfully for the demo question. The request after the fix used the real CEMS, GBIF and CDSE catalogue context and passed validation with 24 source-backed facts, five hypotheses, ten unknowns and three pathways. Model returned: `gpt-4.1-mini-2025-04-14`. This verifies that live request and validation flow, not ecological correctness or every possible response. Authenticated satellite raster processing remains unverified. The original pre-credential checks below retain their original scope.
+
 Validation date: 11 October 2026. Tests ran locally; no provider credentials were available.
 
 ## Automated checks

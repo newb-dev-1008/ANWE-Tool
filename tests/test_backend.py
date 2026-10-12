@@ -14,11 +14,17 @@ from backend.biodiversity import normalise_occurrence
 from backend.satellite import scene_indices, difference, process_body, grid, statistics
 from backend.evidence import EvidenceStore
 from backend.ai import validate_output, assess, PATHWAYS, schema
+from backend.values import VALUE_NAMES
 from backend.common import ServiceError
 import server
 
 def valid_answer():
-    return {'observedReferences':[FIRE_EVIDENCE['id']],
+    return {'summary':'Available evidence supports investigation; impacts remain uncertain.',
+            'humanReviewRequired':True,
+            'factualClaims':[],
+            'valuesAssessment':[{'value':v,'assessment':'Site impacts are unknown; field review is needed.',
+              'fieldChecks':['Verify habitat condition and animal use.'],'evidenceIds':[FIRE_EVIDENCE['id']]} for v in VALUE_NAMES],
+            'observedReferences':[FIRE_EVIDENCE['id']],
             'hypotheses':['Habitat loss could reduce shelter; field verification is needed.'],
             'unknowns':['Current occupancy and individual animal welfare are unknown.'],
             'pathways':[{'name':name,'benefits':['May preserve suitable habitat.'],'harms':['Work could disturb animals.'],
@@ -89,6 +95,19 @@ class EvidenceTests(unittest.TestCase):
         self.assertTrue(any(r['id']=='gbif-fixture' for r in context))
 
 class AITests(unittest.TestCase):
+    def test_source_labels_are_not_numerical_claims(self):
+        answer=valid_answer()
+        answer['unknowns']=['Sentinel-2 Level-2A imagery and EMSR580 do not establish current occupancy.']
+        self.assertEqual(validate_output(answer,[FIRE_EVIDENCE])['unknowns'],answer['unknowns'])
+        import re
+        pattern=schema([FIRE_EVIDENCE['id']])['properties']['unknowns']['items']['pattern']
+        self.assertIsNotNone(re.fullmatch(pattern,answer['unknowns'][0]))
+        for narrative in ['Sentinel-2 shows 95 percent mortality.', 'Sentinel-20 confirms occupancy.',
+                          'Survey in 2022 proves current presence.', 'See [EMSR580].']:
+            answer['unknowns']=[narrative]
+            with self.assertRaises(ServiceError):validate_output(answer,[FIRE_EVIDENCE])
+            self.assertIsNone(re.fullmatch(pattern,narrative))
+
     def test_sources_and_numerical_facts_are_server_owned(self):
         out=validate_output(valid_answer(),[FIRE_EVIDENCE])
         self.assertEqual(out['facts'][0]['measurements'],FIRE_EVIDENCE['measurements'])
@@ -146,5 +165,28 @@ class HTTPTests(unittest.TestCase):
                 result=self.client.post(self.base+path,headers={'X-ANWE-Token':token},json={'question':'test'},timeout=5)
                 self.assertEqual(result.status_code,503)
                 self.assertIn('disabled',result.json()['error'].lower())
+    def test_pdf_http_download_stale_evidence_and_private_details(self):
+        status=self.client.get(self.base+'/api/status',timeout=5).json()
+        snapshot=self.client.get(self.base+'/api/evidence',timeout=5).json()
+        headers={'X-ANWE-Token':status['csrfToken']}
+        body={'evidenceVersion':snapshot['version'],'responseIds':[], 'includeReview':False,
+              'review':{'reviewer':'PRIVATE PERSON','rationale':'PRIVATE NOTES'}}
+        response=self.client.post(self.base+'/api/report/pdf',headers=headers,json=body,timeout=20)
+        self.assertEqual(response.status_code,200);self.assertEqual(response.headers['Content-Type'],'application/pdf')
+        import pymupdf
+        with pymupdf.open(stream=response.content,filetype='pdf') as document:
+            self.assertNotIn('PRIVATE', ''.join(p.get_text() for p in document))
+        body['evidenceVersion']='stale';self.assertEqual(self.client.post(self.base+'/api/report/pdf',headers=headers,json=body,timeout=10).status_code,409)
+        body['evidenceVersion']=snapshot['version'];body['responseIds']=['invented-answer']
+        self.assertEqual(self.client.post(self.base+'/api/report/pdf',headers=headers,json=body,timeout=10).status_code,400)
+    def test_comparison_endpoint_uses_server_query_and_updates_context(self):
+        from backend.comparison import compare_records, parameters
+        data=compare_records([],[],parameters());data['method']='Explicit fixture empty comparison'
+        status=self.client.get(self.base+'/api/status',timeout=5).json()
+        with patch('server.load_comparison',return_value=data) as source:
+            response=self.client.post(self.base+'/api/biodiversity/comparison',headers={'X-ANWE-Token':status['csrfToken']},json={'group':'All'},timeout=10)
+            self.assertEqual(response.status_code,200);source.assert_called_once_with({'group':'All'})
+        snapshot=self.client.get(self.base+'/api/evidence',timeout=5).json()
+        self.assertTrue(any(r['id'].startswith('comparison-') for r in snapshot['records']))
 
 if __name__=='__main__':unittest.main()

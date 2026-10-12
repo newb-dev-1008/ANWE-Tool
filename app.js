@@ -30,6 +30,8 @@ const STATE = {
     unresolvedRisks: "",
     additionalNotes: "",
     overriddenAssessments: "",
+    reviewStatus: "draft",
+    approvalConfirmed: false,
     signedOff: false,
     savedAt: null,
   },
@@ -141,12 +143,13 @@ function showScreen(screenId) {
   const labels = {
     "case-overview": "Explore wildfire",
     "ecological-evidence": "Ecological evidence",
+    "biodiversity-comparison": "Biodiversity comparison",
     "ai-assistant": "AI Ecological Assistant",
     "restoration-summary": "Restoration summary",
     "welfare-context": "Animal Welfare Context",
     "compare-pathways": "Compare Pathways",
     "expert-review": "Expert Review & Record",
-    "justice-analysis": "Multispecies Justice",
+    "design-for-values": "Design for Values",
     "evaluation": "Evaluation Checklist",
   };
   const bc = document.getElementById("breadcrumb-current");
@@ -164,7 +167,7 @@ function showScreen(screenId) {
 
   // Lazy-render screens that need it
   if (screenId === "compare-pathways") renderCompareView();
-  if (screenId === "justice-analysis") renderJusticeTable();
+  if (screenId === "design-for-values") renderValuesMatrix();
   if (screenId === "evaluation") renderEvaluationChecklist();
 }
 
@@ -470,6 +473,7 @@ function renderEvBadge(type) {
 let modalReturnFocus;
 function openWelfareModal(speciesId, domain) {
   modalReturnFocus = document.activeElement;
+  activeWelfareModal={groupId:speciesId,domain};
   const sp = SCENARIO.focalSpecies.find((s) => s.id === speciesId);
   if (!sp) return;
   const dw = sp.welfareContext[domain];
@@ -479,44 +483,7 @@ function openWelfareModal(speciesId, domain) {
   document.getElementById("modal-title").textContent = `${sp.commonName} — ${domainLabel(domain)}`;
   document.getElementById("modal-subtitle").textContent = sp.scientificName;
 
-  document.getElementById("modal-body").innerHTML = `
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
-      ${renderBadge(dw.status)}
-      ${renderEvBadge(dw.evidenceType)}
-    </div>
-
-    <div style="margin-bottom:16px;">
-      <div style="font-size:0.75rem;font-weight:600;color:var(--clr-text-faint);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Assessment Detail</div>
-      <p style="font-size:0.875rem;line-height:1.7;">${escapeHtml(dw.detail)}</p>
-    </div>
-
-    <hr class="divider">
-
-    <div style="margin-bottom:16px;">
-      <div style="font-size:0.75rem;font-weight:600;color:var(--clr-text-faint);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Uncertainty</div>
-      ${getUncertaintyDots(dw.uncertainty)}
-      <p style="font-size:0.8rem;color:var(--clr-text-muted);margin-top:6px;">${escapeHtml(dw.uncertainty)}</p>
-    </div>
-
-    <div class="gap-flag" style="margin-bottom:16px;">
-      <span aria-hidden="true">🔍</span>
-      <div>
-        <strong>Knowledge gap:</strong> ${escapeHtml(dw.knowledgeGap)}
-      </div>
-    </div>
-
-    <div class="callout callout-warning" style="margin-top:0;">
-      <span class="callout-icon" aria-hidden="true">⚠️</span>
-      <div style="font-size:0.8rem;">
-        ${escapeHtml(sp.note)}<br>
-        Evidence type <em>${escapeHtml(dw.evidenceType)}</em> —
-        ${dw.evidenceType.toLowerCase().includes("observation")
-          ? "Based on illustrative field records. Sample size insufficient for population inference."
-          : dw.evidenceType.toLowerCase().includes("inference")
-            ? "Inferred from general ecological principles, not site-specific data."
-            : "Assessment is based on an unknown or unconfirmed basis — treat as a knowledge gap."}
-      </div>
-    </div>`;
+  document.getElementById("modal-body").innerHTML = renderWelfareDetails(sp,domain,dw);
 
   const overlay = document.getElementById("welfare-modal");
   overlay.classList.add("open");
@@ -527,6 +494,7 @@ function closeWelfareModal() {
   const modal = document.getElementById("welfare-modal");
   if (!modal.classList.contains("open")) return;
   modal.classList.remove("open");
+  activeWelfareModal=null;
   if (modalReturnFocus) modalReturnFocus.focus();
 }
 
@@ -556,6 +524,7 @@ function renderCompareView() {
     renderStacked(container);
   } else if (STATE.compareView === "species") {
     renderBySpecies(container);
+    container.innerHTML += SCENARIO.recoveryPathways.map(renderPathwayValues).join("");
   }
 }
 
@@ -673,6 +642,7 @@ function renderSideBySide(container) {
           <ul style="list-style:none;margin-bottom:12px;">${fieldHtml}</ul>
         </details>
 
+        ${renderPathwayValues(opt)}
         <!-- Ethics flags -->
         <hr class="divider">
         <div style="font-size:0.75rem;font-weight:600;color:var(--clr-text-faint);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">⚖️ Ethics Flags</div>
@@ -699,6 +669,7 @@ function renderStacked(container) {
           <div class="card-subtitle">${escapeHtml(opt.timeframe)} · ${escapeHtml(opt.cost)} · ${escapeHtml(opt.managementIntensity)} intensity</div>
         </div>
       </div>
+      ${renderPathwayValues(opt)}
       <p style="font-size:0.875rem;line-height:1.7;color:var(--clr-text-muted);">${escapeHtml(opt.description)}</p><p>${escapeHtml(opt.inappropriate)} ${escapeHtml(opt.reviewRequired)}</p>
       <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;">
         <div style="flex:1;min-width:200px;">
@@ -823,6 +794,7 @@ function renderExpertReview() {
         </div>
       </div>
 
+      ${renderReviewControls()}
       <!-- Decision rationale -->
       <div class="card">
         <div class="card-header">
@@ -951,6 +923,8 @@ function clearRecord() {
     evidenceVersion: "", supportingEvidence: "", reviewer: "", date: new Date().toISOString().split("T")[0],
     preferredOption: "", rationale: "", challengedItems: "",
     unresolvedRisks: "", additionalNotes: "", overriddenAssessments: "",
+    reviewStatus: "draft",
+    approvalConfirmed: false,
     signedOff: false, savedAt: null,
   };
   try { localStorage.removeItem(RECORD_KEY); } catch {}
@@ -958,96 +932,9 @@ function clearRecord() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   SCREEN E: MULTISPECIES JUSTICE
+   SCREEN E: DESIGN FOR VALUES
 ═══════════════════════════════════════════════════════════ */
 
-function renderJusticeTable() {
-  const el = document.getElementById("justice-table");
-  if (!el) return;
-  const { multispieciesJustice } = SCENARIO;
-
-  const omissionBadge = (risk) => {
-    if (!risk) return '<span class="badge badge-unknown">Unknown</span>';
-    const r = risk.toUpperCase();
-    if (r.startsWith("CRITICAL")) return '<span class="badge badge-high">🚨 CRITICAL</span>';
-    if (r.startsWith("VERY HIGH") || r.startsWith("HIGH")) return '<span class="badge badge-high">' + escapeHtml(risk) + '</span>';
-    if (r.startsWith("MODERATE")) return '<span class="badge badge-moderate">' + escapeHtml(risk) + '</span>';
-    return '<span class="badge badge-low">' + escapeHtml(risk) + '</span>';
-  };
-
-  const rows = multispieciesJustice.analysis.map((a) => `
-    <tr>
-      <td style="font-weight:600;">${escapeHtml(a.group)}</td>
-      <td style="font-size:0.8rem;color:var(--clr-text-muted);">${escapeHtml(a.representation)}</td>
-      <td>${renderBadge(a.riskOfHarm)}</td>
-      <td>${omissionBadge(a.riskOfOmission)}</td>
-    </tr>`).join("");
-
-  el.innerHTML = `
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon" style="background:rgba(147,51,234,0.15);" aria-hidden="true">⚖️</div>
-        <div>
-          <div class="card-title">Who benefits? Who is harmed? Whose interests are missing?</div>
-          <div class="card-subtitle" style="max-width:600px;">${escapeHtml(multispieciesJustice.description)}</div>
-        </div>
-      </div>
-
-      <div class="callout callout-warning" style="margin-bottom:16px;">
-        <span class="callout-icon" aria-hidden="true">⚠️</span>
-        <div style="font-size:0.8rem;">
-          <strong>Risk of Omission</strong> flags groups at risk of being <em>systematically excluded</em> from planning —
-          not groups that are confirmed absent. Absence of records does NOT confirm absence of animals.
-          Groups flagged CRITICAL or VERY HIGH must be explicitly included in any real-world review.
-        </div>
-      </div>
-
-      <div class="table-wrapper">
-        <table aria-label="Multispecies Justice analysis">
-          <thead>
-            <tr>
-              <th>Group</th>
-              <th>Planning Representation</th>
-              <th>Risk of Harm</th>
-              <th>Risk of Omission</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-
-      <div style="margin-top:24px;">
-        <h3 style="font-size:0.875rem;margin-bottom:12px;color:var(--clr-text-muted);">Key insights from this analysis:</h3>
-        <div class="callout callout-danger">
-          <span class="callout-icon" aria-hidden="true">🐝</span>
-          <div>
-            <strong>Pollinators and soil biota</strong> have a VERY HIGH risk of omission — they are almost never
-            included in fire-recovery plans despite experiencing severe direct impacts. Including them here
-            reflects Multispecies Justice principles.
-          </div>
-        </div>
-        <div class="callout callout-warning" style="margin-top:8px;">
-          <span class="callout-icon" aria-hidden="true">🐸</span>
-          <div>
-            <strong>Amphibians</strong> has a HIGH risk of omission due to its cryptic aquatic larval stage
-            being invisible in standard visual surveys. This highlights a systematic data gap.
-          </div>
-        </div>
-        <div class="callout callout-info" style="margin-top:8px;">
-          <span class="callout-icon" aria-hidden="true">🔍</span>
-          <div>
-            <strong>Future / undetected species:</strong> Absence of biodiversity records must NEVER be treated as
-            proof of species absence. Any real-world application of this tool must include a systematic
-            assessment of potential undetected biodiversity.
-          </div>
-        </div>
-      </div>
-    </div>`;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   SCREEN F: EVALUATION CHECKLIST
-═══════════════════════════════════════════════════════════ */
 
 function renderEvaluationChecklist() {
   const el = document.getElementById("eval-checklist");
@@ -1139,22 +1026,22 @@ function saveChecklistNotes(event) {
 function exportRecord() {
   const record = {
     exportedAt: new Date().toISOString(),
-    toolVersion: "3.0-prototype",
-    liveEvidenceAndAI: liveReport(),
+    toolVersion: "4.0-prototype",
+    liveEvidenceAndAI: liveReport(exportConsent().review),
     recordStatus: "Local prototype draft; no verified sign-off or authority approval",
     geography: STUDY_AREA,
     evidenceSources: SCENARIO.caseOverview.evidenceSources,
     restorationAlternatives: SCENARIO.recoveryPathways,
-    restorationSummary: restorationSummary(),
+    restorationSummary: restorationSummary(exportConsent().review,exportConsent().notes),
     dataStatus: "MIXED — real source records, derived outputs when available, unvalidated hypotheses",
     scenario: {
       id: SCENARIO.meta.id,
       label: SCENARIO.meta.label,
       disclaimer: SCENARIO.meta.disclaimer,
     },
-    expertReview: STATE.expertRecord,
+    expertReview: exportReview(),
     checklistOverrides: STATE.checklistOverrides,
-    checklistReviewerNotes: STATE.checklistReviewerNotes,
+    checklistReviewerNotes: exportConsent().notes ? STATE.checklistReviewerNotes : 'Withheld by export privacy settings',
     warning: "This export is from a prototype tool with mixed evidence and unvalidated hypotheses. It has not been independently validated. Do NOT use for real management decisions.",
   };
 

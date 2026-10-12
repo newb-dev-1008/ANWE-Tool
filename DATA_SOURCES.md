@@ -1,5 +1,17 @@
 # Sources, methods and availability
 
+## ANWE 4.0 temporal GBIF comparison
+
+The new comparison retrieves real `eventDate`-filtered observations, not upload/modification dates. Defaults are 1–30 June 2021 and 1–30 June 2023 (matching season/duration). Dates and taxonomic group are editable. The fire start is documented as 15 June 2022; end remains unverified. After windows must start after the 25 June mapped observation and are labelled post-start, not confirmed post-extinguishment. July-fire effects are a confounder.
+
+Both periods use the same CEMS generalised polygons and an outside metric buffer (default 5 km, adjustable 0.5–20 km). Geometry is projected to EPSG:32629 for buffering/classification. GBIF bounding-box queries enclose that area; server-side point classification separates burned extent, outside buffer, uncertain location and excluded outside points. Unknown coordinate precision or uncertainty crossing a boundary prevents confident zone assignment. The geometry remains generalised, not an exact final incident boundary.
+
+Each period is paginated up to 2,100 records. Bounding-box API totals and retrieved totals are disclosed separately from zone counts. Truncation warnings prevent capped samples being presented as complete totals. Species sets use GBIF speciesKey; unresolved species do not count as distinct species. Only-before/after means only recorded in the retrieved eligible subset. Group tables and charts display record counts without percentage-change interpretations.
+
+Day-precision `eventDate` is required for period eligibility; coarse dates, ranges, invalid/missing dates and outside-window results are counted/excluded. An independent 300-record all-date sample provides a bounded date-quality audit, not a complete count of undated records. All exported/displayed records omit precise coordinates. Dataset ID, source URL and licence are retained; a missing dataset title is explicitly represented by its dataset ID.
+
+Live default retrieval on 12 October 2026 returned 395 pre-window and 227 after-window bounding-box matches. Classified eligible records: before burned 13 (6 species), buffer 35 (16 species), uncertain 143 (62 species); after burned 0, buffer 5 (4 species), uncertain 204 (79 species). Other results were excluded by dates/geography/quality. Zero after records confidently inside the generalised extent does not establish animal absence or disappearance. Counts can change with cache expiry.
+
 ## Working public integrations
 
 | Component | Source and status | Coverage and limits |

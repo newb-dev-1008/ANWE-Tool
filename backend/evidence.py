@@ -21,7 +21,7 @@ class EvidenceStore:
     def put(self,source,data):
         with self.lock:
             self.sources[source]=data
-            prefix={'gbif':'gbif-','satellite':'sentinel-','analysis':'analysis-'}.get(source)
+            prefix={'gbif':'gbif-','satellite':'sentinel-','analysis':'analysis-','comparison':'comparison-'}.get(source)
             if prefix: self.records={k:v for k,v in self.records.items() if not k.startswith(prefix)}
             if source=='gbif':
                 for r in data.get('records',[]): self.records[r['id']]=r
@@ -40,6 +40,22 @@ class EvidenceStore:
                      'measurements':data['statistics'],'method':data['method'],'limitations':data['limitations'],
                      'url':'https://documentation.dataspace.copernicus.eu/APIs/SentinelHub/Data/S2L2A.html',
                      'license':data['post']['license']}
+                self.records[rec['id']]=rec
+            if source=='comparison':
+                measures={'fireStart':CASE['eventStart'],'beforeStart':data['parameters']['beforeStart'],
+                          'beforeEnd':data['parameters']['beforeEnd'],'afterStart':data['parameters']['afterStart'],
+                          'afterEnd':data['parameters']['afterEnd'],'bufferKm':data['parameters']['bufferKm'],
+                          'observationDateAudit':data['dateAudit']}
+                for phase in ['before','after']:
+                    measures[phase]={zone:{k:v for k,v in stats.items() if k in ['records','distinctSpecies','groups','unresolvedSpecies']} for zone,stats in data[phase]['zones'].items()}
+                    measures[phase+'Truncated']=str(data[phase]['truncated'])
+                    for zone in ['burned','buffer','uncertain']:
+                        names=list(data[phase]['zones'][zone]['species'].values())
+                        measures[phase+zone+'SpeciesSample']='; '.join(names[:30]) or 'No species resolved in retrieved records; not proof of absence'
+                rec={'id':'comparison-'+data['id'],'kind':'Derived','source':'ANWE temporal comparison of GBIF indexed observations',
+                     'datasetId':data['id'],'date':data['retrievedAt'],'coverage':data['geography']['method'],
+                     'measurements':measures,'method':data['method'],'limitations':data['limitations']+' '+data['warning']+' Species names in model context capped at thirty per zone/period.',
+                     'url':'https://techdocs.gbif.org/en/openapi/v1/occurrence','license':'GBIF constituent dataset licences retained in comparison records'}
                 self.records[rec['id']]=rec
 
     def snapshot(self):

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ANWE 3.0 — Sierra de la Culebra restoration evidence</title>
+  <title>ANWE 4.0 — Sierra de la Culebra restoration evidence</title>
   <meta name="description" content="Decision support prototype for comparing post-fire habitat-recovery options through an animal-welfare lens. Real source records, transparent uncertainty and human review." />
   <!-- Open Graph -->
   <meta property="og:title" content="Animal-Centred ANWE" />
@@ -62,12 +62,13 @@
       </button>
 
       <button class="nav-item" onclick="showScreen('ecological-evidence')" id="nav-ecological-evidence"><span class="nav-icon" aria-hidden="true">◉</span>Ecological evidence</button>
+      <button class="nav-item" onclick="showScreen('biodiversity-comparison')" id="nav-biodiversity-comparison">Biodiversity comparison</button>
       <button class="nav-item" onclick="showScreen('ai-assistant')" id="nav-ai-assistant"><span class="nav-icon" aria-hidden="true">✧</span>AI Ecological Assistant</button>
       <button class="nav-item" onclick="viewSummary()" id="nav-restoration-summary"><span class="nav-icon" aria-hidden="true">↗</span>Report</button>
       <div class="nav-section-label" style="margin-top: 12px;">Tools</div>
-      <button class="nav-item" onclick="showScreen('justice-analysis')" id="nav-justice-analysis">
+      <button class="nav-item" onclick="showScreen('design-for-values')" id="nav-design-for-values">
         <span class="nav-icon" aria-hidden="true">⚖️</span>
-        Multispecies Justice
+        Design for Values
       </button>
       <button class="nav-item" onclick="showScreen('evaluation')" id="nav-evaluation">
         <span class="nav-icon" aria-hidden="true">✅</span>
@@ -273,31 +274,14 @@
       </section>
 
       <!-- ══════════════════════════════════════════════════
-           SCREEN E: MULTISPECIES JUSTICE
+           SCREEN E: DESIGN FOR VALUES
       ══════════════════════════════════════════════════ -->
-      <section id="screen-justice-analysis" class="screen" aria-labelledby="mj-heading">
-
-        <div class="section-heading">
-          <div>
-            <h1 id="mj-heading">⚖️ Multispecies Justice Analysis</h1>
-            <p style="color:var(--clr-text-muted);font-size:0.875rem;margin-top:4px;">
-              Who may benefit? Who may be harmed? Whose interests are missing or underweighted?
-            </p>
-          </div>
-        </div>
-
-        <div class="callout callout-info">
-          <span class="callout-icon" aria-hidden="true">ℹ️</span>
-          <div>
-            Multispecies Justice asks us to look beyond charismatic flagship species and consider the
-            full range of affected beings — including invertebrates, soil biota and species not yet
-            surveyed. A high "risk of omission" flag means these groups are at risk of being
-            <em>systematically excluded</em> from planning, not that they are necessarily absent.
-          </div>
-        </div>
-
-        <div id="justice-table"></div>
-
+      <section id="screen-design-for-values" class="screen" aria-labelledby="values-heading">
+        <h1 id="values-heading">Design for Values</h1>
+        <p>Stakeholder concern → Ethical value → Norm → Requirement → Feature → Evaluation.</p>
+        <p>For restoration organisations and land managers: inspect how the five values shape a decision. Priorities can conflict; there is no aggregate ethical score.</p>
+        <div class="values-filters"><label for="value-filter">Ethical value</label><select id="value-filter" onchange="renderValuesMatrix()"><option value="All">All five values</option></select><label for="stakeholder-filter">Stakeholder priority</label><select id="stakeholder-filter" onchange="renderValuesMatrix()"><option value="All">All stakeholders</option></select></div>
+        <div id="values-matrix">Values matrix has not loaded. Reload the app with Ctrl+F5.</div><div id="values-stakeholders"></div><div id="values-tensions"></div>
       </section>
 
       <!-- ══════════════════════════════════════════════════
@@ -338,6 +322,7 @@
       </section>
 
       <section id="screen-ecological-evidence" class="screen" aria-labelledby="evidence-heading">
+        <details class="card"><summary>What do these terms mean?</summary><p><strong>NDVI — Normalized Difference Vegetation Index:</strong> a satellite indicator of vegetation greenness. Higher values often mean more green vegetation; they do not directly measure ecological recovery or animal wellbeing.</p><p><strong>NBR — Normalized Burn Ratio:</strong> an index used to investigate burned land and vegetation change.</p><p><strong>dNBR — differenced NBR:</strong> before-image NBR minus after-image NBR. Positive values mean NBR decreased. A value of 0.1 does not mean 10% damage. This demo does not assign validated severity classes.</p><p><strong>Sentinel-2:</strong> the Copernicus satellite mission supplying imagery. Previews are overview images; calculated layers are grids of pixel measurements. Masked/blank pixels mean excluded or missing data.</p><p><strong>CEMS:</strong> Copernicus Emergency Management Service, the source of the displayed fire extent. <strong>EFFIS:</strong> European Forest Fire Information System; its historical severity data are unavailable here.</p><p><strong>Mean:</strong> the average of valid pixels in the regional window, including unburned land. It does not describe every location.</p></details>
         <h1 id="evidence-heading">Ecological evidence</h1><p>Observed means a source record exists. Derived means a documented calculation. Neither establishes present animals or measured welfare.</p>
         <div class="card"><h2>Sentinel-2 · before, after and recovery</h2><p id="catalogue-status" role="status">Loading public catalogue…</p>
           <div class="grid-2"><div><label for="pre-image">Pre-fire acquisition / tile</label><select id="pre-image" onchange="updatePreviews()"></select><img id="pre-preview" class="satellite-preview" alt="Pre-fire satellite quicklook unavailable"><p id="pre-caption" class="provenance"></p></div>
@@ -349,6 +334,20 @@
         <div class="card"><h2>Biodiversity observations · GBIF</h2><p id="biodiversity-status" role="status">Loading indexed animal observations…</p><div id="biodiversity-records"></div></div>
         <div class="card"><h2>Evidence provenance</h2><p id="live-evidence-count"></p><div id="live-evidence-table"></div></div>
       </section>
+      <section id="screen-biodiversity-comparison" class="screen" aria-labelledby="gbif-compare-heading">
+        <h1 id="gbif-compare-heading">Biodiversity before and after</h1>
+        <details class="card"><summary>Understanding GBIF and the comparison</summary><p><strong>GBIF — Global Biodiversity Information Facility:</strong> a network and index of biodiversity records from many contributors.</p><p><strong>Occurrence record:</strong> a taxon reported at a place and time, not a count of all animals. <strong>Distinct species:</strong> different identified species in the records, counting each once.</p><p><strong>Buffer:</strong> a comparison zone outside the mapped burned extent (default 5 km). <strong>Uncertain location:</strong> a record whose location precision is unknown or may cross a boundary.</p><p><strong>Groups:</strong> Aves = birds; Mammalia = mammals; Amphibia = amphibians; Insecta = insects; Arachnida = spiders and relatives; Squamata = lizards and snakes.</p><p>More records can mean more observation effort. No records does not prove absence. The PDF includes a fuller plain-language glossary.</p></details>
+        <p>Compare indexed observations, not population change. Fire start: 15 June 2022. Fire end: unverified. The default windows are matched June seasons before the fire and after its start; later records may include effects of the separate July fire.</p>
+        <form id="gbif-comparison-form" onsubmit="event.preventDefault(); if (typeof runBiodiversityComparison === 'function') { runBiodiversityComparison(event); } else { document.getElementById('comparison-status').textContent='Comparison code did not load. Stop the running server, restart python server.py, then reload with Ctrl+F5.'; } return false;" class="card">
+          <div class="grid-2"><div><h3>Before window</h3><label for="before-start">Start</label><input id="before-start" type="date" value="2021-06-01" required><label for="before-end">End</label><input id="before-end" type="date" value="2021-06-30" required></div><div><h3>After-start window</h3><label for="after-start">Start</label><input id="after-start" type="date" value="2023-06-01" required><label for="after-end">End</label><input id="after-end" type="date" value="2023-06-30" required></div></div>
+          <label for="comparison-buffer">Surrounding buffer outside mapped extent (km)</label><input id="comparison-buffer" type="number" min="0.5" max="20" step="0.5" value="5" required>
+          <label for="comparison-group">Taxonomic group</label><select id="comparison-group"><option>All</option><option>Mammalia</option><option>Aves</option><option>Amphibia</option><option>Reptilia</option><option>Insecta</option><option>Arachnida</option></select>
+          <button id="run-comparison" class="btn btn-primary" type="submit">Retrieve comparison</button>
+        </form>
+        <p id="comparison-status" role="status">Not loaded. Retrieve a comparison to include it in AI context and reports.</p>
+        <div id="comparison-results"></div>
+      </section>
+
       <section id="screen-ai-assistant" class="screen" aria-labelledby="ai-heading">
         <h1 id="ai-heading">AI Ecological Assistant</h1><p>Model-generated interpretations are drafts. Source facts are reproduced from server-owned evidence; all ecological implications require expert review.</p>
         <p id="ai-selection-notice" class="callout callout-info">Select the Culebra case in Explore wildfire before asking.</p><p id="ai-status" role="status">Checking model configuration…</p>
@@ -356,9 +355,11 @@
         <p class="provenance">Only your question and a bounded selection of source records are sent to OpenAI when you click Ask. Reviewer names and private notes are not included. Requests and output size are capped.</p><div id="ai-conversation" aria-live="polite"></div>
       </section>
       <section id="screen-restoration-summary" class="screen" aria-labelledby="summary-heading">
-        <h1 id="summary-heading">Restoration review summary</h1>
+        <h1 id="summary-heading">Restoration assessment report</h1>
+        <p>You can download a draft report without expert review. Unreviewed sections are labelled clearly. Expert review is required before acting on restoration suggestions, not before exporting a report.</p>
         <p>Source evidence, derived measurements where available, model-generated drafts and your separate human conclusions. No official approval.</p>
         <div class="workflow-actions"><button class="btn btn-primary" onclick="exportSummary()">Download text summary</button><button class="btn btn-secondary" onclick="showScreen('expert-review')">Back to expert review</button></div>
+        <div class="card"><h2>Professional PDF assessment</h2><p>Includes available evidence, the five values, restoration comparisons and current-session AI drafts. Review details and private notes are omitted from PDF, JSON and text exports by default. Exported AI questions and drafts are included; avoid confidential information in questions.</p><label><input id="pdf-include-review" type="checkbox"> Include my reviewer name, justification and review comments in exported reports</label><label><input id="pdf-include-notes" type="checkbox"> Include private additional notes (requires review-details consent above)</label><button id="download-pdf" class="btn btn-primary" onclick="downloadPDFReport()">Download PDF Report</button><p id="pdf-status" role="status"></p></div>
         <pre id="summary-text" class="card"></pre>
       </section>
     </div><!-- /page-content -->
@@ -382,12 +383,15 @@
 
 <!-- ══ SCRIPTS ════════════════════════════════════════════ -->
 <script src="data/scenario.js"></script>
+  <script src="data/design-values.js"></script>
 <script src="data/geography.js"></script>
 <script src="data/providers.js"></script>
 <script src="vendor/leaflet.js"></script>
-<script src="app.js"></script>
-<script src="integrations.js"></script>
+<script src="app.js?v=welfare-ai-1"></script>
+<script src="integrations.js?v=plain-text-4"></script>
+  <script src="values.js?v=report-token-1"></script>
 <script src="workspace.js"></script>
+<script src="welfare-ai.js"></script>
 
 </body>
 </html>
