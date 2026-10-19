@@ -34,6 +34,9 @@ const STATE = {
     approvalConfirmed: false,
     signedOff: false,
     savedAt: null,
+    humanNeedCategory: "unknown",
+    humanNeed: "",
+    animalSafeguards: "",
   },
   checklistOverrides: {},
   checklistReviewerNotes: "",
@@ -141,6 +144,9 @@ function showScreen(screenId) {
 
   // Update breadcrumb
   const labels = {
+    "demo-start": "Understand the case",
+    "demo-options": "Compare options",
+    "demo-decision": "Explain and export",
     "case-overview": "Explore wildfire",
     "ecological-evidence": "Ecological evidence",
     "biodiversity-comparison": "Biodiversity comparison",
@@ -169,6 +175,7 @@ function showScreen(screenId) {
   if (screenId === "compare-pathways") renderCompareView();
   if (screenId === "design-for-values") renderValuesMatrix();
   if (screenId === "evaluation") renderEvaluationChecklist();
+  if (typeof renderDemoScreen === "function") renderDemoScreen(screenId);
 }
 
 function toggleSidebar() {
@@ -806,11 +813,11 @@ function renderExpertReview() {
         </div>
         <div class="form-group">
           <label class="form-label" for="decision-rationale">
-            Why is this option preferred? What factors were decisive?
+            Which human and animal interests conflict, and why is this decision justified?
             <span style="color:var(--clr-text-faint);font-weight:400;"> (Be specific — animal welfare, evidence, feasibility, etc.)</span>
           </label>
           <textarea id="decision-rationale" rows="6"
-                    placeholder="State why a strategy is preferred or why the decision is deferred. Compare alternatives and identify evidence needed before action."
+                    placeholder="Record human objectives, animal interests, less harmful alternatives, missing evidence, safeguards and monitoring. If animal interests are outweighed, explain necessity and proportionality. A modest welfare priority guides closely balanced choices; human safety and essential needs still matter. You may defer when evidence is insufficient and it is safe to wait."
                     oninput="STATE.expertRecord.rationale=this.value">${escapeHtml(STATE.expertRecord.rationale)}</textarea>
         </div>
       </div>
@@ -926,6 +933,7 @@ function clearRecord() {
     reviewStatus: "draft",
     approvalConfirmed: false,
     signedOff: false, savedAt: null,
+    humanNeedCategory: "unknown", humanNeed: "", animalSafeguards: "",
   };
   try { localStorage.removeItem(RECORD_KEY); } catch {}
   renderExpertReview();

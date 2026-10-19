@@ -26,7 +26,7 @@ Source: completed report, pages 2–3 and Appendix A/B. [CEMS EMSR580](https://m
 
 ## 4. Ethical architecture — 2:15–3:05
 
-“Five values guide the design: animal welfare, ecological recovery, transparency, uncertainty and accountability. The first two ask how restoration affects animals and habitat functions. Transparency and uncertainty keep assumptions and missing measurements visible. Accountability means that people justify decisions and obtain the required review. We consider less visible groups as well as mammals and birds. We protect sensitive locations and avoid treating missing records as absence. The app supports these questions without combining them into one ethical score.”
+“We started with multispecies justice to explain why affected animals should count in restoration decisions. A comprehensive justice assessment needs local species and welfare evidence that we cannot yet verify. Design for Values translates our ethical priorities into requirements we can test. Animal welfare is our primary objective, with ecological recovery as a secondary objective. Transparency, uncertainty awareness and accountability govern how the tool handles evidence and decisions. These values connect to habitat concerns, source traceability, field checks and qualified human review. Expert validation remains necessary.”
 
 Source: completed report, page 5 and Appendix C; project Design for Values foundation. Groups: mammals, birds, reptiles, amphibians, invertebrates and soil biota. Soil biota contain diverse organisms; do not assume every organism is an animal or sentient. Stakeholder priorities are authored project assumptions.
 

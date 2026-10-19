@@ -26,6 +26,7 @@ function sourceLink(url,label) {
 
 async function refreshEvidence() {
   LIVE.snapshot = await api('/api/evidence');
+  if(typeof refreshDemoEvidence==='function')refreshDemoEvidence();
   if(LIVE.snapshot.sources?.comparison) {LIVE.comparison=LIVE.snapshot.sources.comparison;renderComparison();}
   document.getElementById('live-evidence-count').textContent = `${LIVE.snapshot.records.length} evidence records · snapshot ${LIVE.snapshot.version}. Record availability is not proof of present animals or site welfare.`;
   const body = LIVE.snapshot.records.map(record => `<tr><td><span class="badge">${escapeHtml(record.kind)}</span></td><td>${sourceLink(record.url,record.source)}<br><small>${escapeHtml(record.datasetId)}</small></td><td>${escapeHtml(record.date)}</td><td>${escapeHtml(record.coverage)}</td><td>${escapeHtml(record.method)}<br>${escapeHtml(record.limitations)}</td></tr>`).join('');

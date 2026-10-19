@@ -5,7 +5,7 @@ import threading
 import time
 from .common import RUNTIME, ServiceError, atomic_json, request, now
 from .evidence import STORE
-from .values import VALUE_NAMES
+from .values import VALUE_NAMES, FOUNDATION
 
 AI_LOCK=threading.Lock()
 LAST_CALL=0
@@ -57,6 +57,8 @@ references; use a short summary, a few hypotheses and unknowns, and one concise 
 check per value. Limit each pathway to one brief benefit, harm and field check. Reference
 only sources that support the specific point; never list every record indiscriminately.
 '''
+INSTRUCTIONS+='\nAuthored ethical policy (normative commitments, not observed ecological facts):\n'+'\n'.join(FOUNDATION['ethicalPosition'][k] for k in ['foundation','justification','decisionRule','limits','uncertainty','reviewPrompt'])
+INSTRUCTIONS+='\nConsider harms of inaction as well as intervention. Do not assume natural regeneration or planting is inherently preferable. In pathway harms and field checks, identify human and animal interests, less harmful alternatives and safeguards concisely. Explain the modest welfare priority without claiming animal interests always override human safety or essential needs.\nAuthored investigation prompts, not established local effects:\n'+json.dumps(FOUNDATION['tradeoffProfiles'],ensure_ascii=False)
 ANSWERS={}
 
 def measurement_fields(record):

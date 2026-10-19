@@ -2,6 +2,8 @@
 
 ## Why this framework
 
+The underlying ethical position is animal-focused, with a modest, defeasible animal-welfare priority in closely balanced choices. Human safety and essential needs remain explicit considerations. This is a normative commitment, not an inferred scientific result. See [ETHICAL_BASIS.md](ETHICAL_BASIS.md) for the argument, limits and required human–animal trade-off record. DfV operationalises this position; it does not supply the ethical justification by itself.
+
 ANWE uses **Design for Values (DfV)**, informed by Value Sensitive Design. It makes ethical commitments inspectable as requirements and application behaviour. See the [TU Delft introduction to the DfV matrix](https://ocw.tudelft.nl/course-lectures/5-4-1-the-design-for-values-approach/) and the [Delft Design for Values Institute](https://delftdesignforvalues.nl/what-is-design-for-values/): values shape design throughout development, and stakeholder priorities require critical assessment.
 
 The product follows **Stakeholder concern → Ethical value → Norm → Design requirement → Feature → Evaluation**. Animal welfare and biodiversity remain central subjects. Multispecies Justice is no longer the organising framework. The previous `reports/ANWE_Multispecies_Justice_Report.pdf` is a historical artifact, not the new application report.
@@ -49,7 +51,7 @@ Each pathway includes its five-value assessment in all comparison views. Structu
 - Simple guidance versus uncertainty: use readable options and expandable limitations instead of an unexplained score.
 - AI convenience versus accountability: retain human reasoning and approval requirements even when AI suggests an option.
 
-Document affected interests, evidence and the decision rationale. DfV does not remove disagreement or establish a universal priority order.
+Document affected interests, evidence, alternatives, safeguards and the decision rationale. The project adopts a modest welfare preference, not a universal priority order. The comparison never automatically chooses a strategy.
 
 ## Limitations and future evaluation
 

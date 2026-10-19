@@ -92,7 +92,7 @@ function persistLocalRecord() {
 }
 
 function restorationSummary(includePrivate=true,includeNotes=true) {
-  const r=includePrivate ? {...STATE.expertRecord} : {...STATE.expertRecord,...Object.fromEntries(['reviewer','date','preferredOption','rationale','challengedItems','overriddenAssessments','unresolvedRisks','supportingEvidence','additionalNotes'].map(k=>[k,'Withheld by export privacy settings']))};
+  const r=includePrivate ? {...STATE.expertRecord} : {...STATE.expertRecord,...Object.fromEntries(['reviewer','date','preferredOption','rationale','challengedItems','overriddenAssessments','unresolvedRisks','supportingEvidence','additionalNotes','humanNeedCategory','humanNeed','animalSafeguards'].map(k=>[k,'Withheld by export privacy settings']))};
   if(!includeNotes)r.additionalNotes='Withheld by export privacy settings';
   const report=liveReport(includePrivate);
   const sources=(LIVE.snapshot?.records || []).map(s=>`${s.kind}: ${s.id} · ${s.source} · ${s.date} · ${s.url} · ${s.limitations}`).join('\n');
@@ -105,6 +105,7 @@ function restorationSummary(includePrivate=true,includeNotes=true) {
     `Reviewer (unverified): ${r.reviewer || 'Not entered'} · Date: ${r.date}`,
     `Preferred strategy: ${r.preferredOption || 'Undecided'}`,
     `Rationale / rejection of alternatives: ${r.rationale || 'Not recorded'}`,
+    `User-stated human need category: ${r.humanNeedCategory || 'Not established'}. Need and consequences of waiting: ${r.humanNeed || 'Not recorded'}. Animal safeguards: ${r.animalSafeguards || 'Not recorded'}`,
     `Challenged assumptions: ${r.challengedItems || 'None recorded'}`,
     `Overrides: ${r.overriddenAssessments || 'None recorded'}`,
     `Unresolved risks: ${r.unresolvedRisks || 'Not recorded; does not imply no risks'}`,

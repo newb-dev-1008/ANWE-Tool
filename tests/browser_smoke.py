@@ -17,6 +17,8 @@ with sync_playwright() as p:
     page=browser.new_page(viewport={'width':1440,'height':1000})
     errors=[];page.on('pageerror',lambda error:errors.append(str(error)))
     page.goto(url);page.wait_for_function('LIVE.catalogue && LIVE.biodiversity',timeout=180000)
+    page.locator('.advanced-nav').evaluate('(el)=>el.open=true')
+    page.locator('#nav-case-overview').click()
     page.locator('button',has_text='Select Culebra case').click()
     page.locator('#nav-design-for-values').click()
     assert page.locator('#values-matrix tbody tr').count()==5
@@ -48,6 +50,7 @@ with sync_playwright() as p:
     assert page.evaluate('STATE.expertRecord.approvalConfirmed') is False
     page.check('#approval-confirmation');page.locator('button[onclick="saveExpertRecord()"]').click()
     page.reload();page.wait_for_function('LIVE.catalogue && LIVE.biodiversity',timeout=180000)
+    page.locator('.advanced-nav').evaluate('(el)=>el.open=true')
     assert page.evaluate('STATE.expertRecord.reviewer')=='PRIVATE BROWSER REVIEWER'
     # A controlled UI failure fixture exercises question preservation without billing.
     page.evaluate('selectDemoArea()');page.locator('#nav-ai-assistant').click()

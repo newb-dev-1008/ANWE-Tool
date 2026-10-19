@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ANWE 4.0 — Sierra de la Culebra restoration evidence</title>
+  <title>Tierra del Fuego — Animal welfare and restoration</title>
   <meta name="description" content="Decision support prototype for comparing post-fire habitat-recovery options through an animal-welfare lens. Real source records, transparent uncertainty and human review." />
   <!-- Open Graph -->
   <meta property="og:title" content="Animal-Centred ANWE" />
   <meta property="og:description" content="Documented Culebra wildfire, ecological evidence, AI drafts and human oversight. Academic prototype." />
   <link rel="stylesheet" href="vendor/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="demo-flow.css?v=demo-1" />
   <!-- Inline critical warning style so it renders even if CSS fails -->
   <style>
     .global-banner {
@@ -28,8 +29,8 @@
 <body>
 
 <!-- Global synthetic-data banner -->
-<div class="global-banner" id="global-banner" role="alert" aria-live="polite">
-  PROTOTYPE — REAL RECORDS, DERIVED DATA AND HYPOTHESES ARE DISTINCT — HUMAN REVIEW REQUIRED
+<div class="global-banner" id="global-banner" role="status">
+  Demo draft · Field verification and human review are required before action.
 </div>
 
 <div id="app">
@@ -38,11 +39,15 @@
   <aside id="sidebar" role="navigation" aria-label="Main navigation">
     <div class="sidebar-logo">
       <div class="logo-icon" aria-hidden="true">🔥</div>
-      <h2>ANWE<br>Restoration workspace</h2>
-      <p>Animal welfare · Ecosystem restoration</p>
+      <h2>Tierra del Fuego</h2>
+      <p>Restoration with animals in mind</p>
     </div>
 
     <nav class="sidebar-nav" aria-label="Screen navigation">
+      <button class="nav-item" id="nav-demo-start" onclick="openDemoStep('demo-start')"><span class="demo-step-number">1</span> Understand the case</button>
+      <button class="nav-item" id="nav-demo-options" onclick="openDemoStep('demo-options')"><span class="demo-step-number">2</span> Compare options</button>
+      <button class="nav-item" id="nav-demo-decision" onclick="openDemoStep('demo-decision')"><span class="demo-step-number">3</span> Explain &amp; export</button>
+      <details class="advanced-nav"><summary>Evidence &amp; advanced tools</summary>
       <div class="nav-section-label">Screens</div>
       <button class="nav-item active" onclick="showScreen('case-overview')" aria-current="page" id="nav-case-overview">
         <span class="nav-icon" aria-hidden="true">📋</span>
@@ -75,12 +80,13 @@
         Evaluation Checklist
         <span class="nav-badge">12</span>
       </button>
+      </details>
     </nav>
 
     <div class="sidebar-footer">
       <div class="synthetic-badge" role="status">
-        EVIDENCE &amp; UNCERTAINTY<br>
-        <span style="font-weight:400;font-size:0.65rem;">Culebra · June 2022 · Mixed evidence</span>
+        Group N ANWE<br>
+        <span style="font-weight:400;font-size:0.75rem;">One case. A reasoned decision.</span>
       </div>
     </div>
   </aside>
@@ -92,17 +98,12 @@
     <header id="header">
       <button id="hamburger" onclick="toggleSidebar()" aria-label="Toggle navigation" aria-expanded="false">☰</button>
       <div class="header-breadcrumb" aria-label="Breadcrumb">
-        <span id="breadcrumb-root">ANWE</span>
+        <span id="breadcrumb-root">Tierra del Fuego</span>
         <span aria-hidden="true">›</span>
-        <span id="breadcrumb-current">Explore wildfire</span>
+        <span id="breadcrumb-current">Understand the case</span>
       </div>
       <div class="header-actions">
-        <span class="badge badge-synthetic" aria-label="Evidence kinds are explicitly labelled">
-          Mixed evidence
-        </span>
-        <button class="btn btn-secondary btn-sm" onclick="exportRecord()" aria-label="Export decision record as JSON">
-          ⬇ Export Record
-        </button>
+        <span class="demo-header-note">Animal welfare, with human needs in view.</span>
       </div>
     </header>
 
@@ -383,15 +384,16 @@
 
 <!-- ══ SCRIPTS ════════════════════════════════════════════ -->
 <script src="data/scenario.js"></script>
-  <script src="data/design-values.js"></script>
+  <script src="data/design-values.js?v=welfare-priority-1"></script>
 <script src="data/geography.js"></script>
 <script src="data/providers.js"></script>
 <script src="vendor/leaflet.js"></script>
 <script src="app.js?v=welfare-ai-1"></script>
 <script src="integrations.js?v=plain-text-4"></script>
-  <script src="values.js?v=report-token-1"></script>
+  <script src="values.js?v=welfare-priority-1"></script>
 <script src="workspace.js"></script>
 <script src="welfare-ai.js"></script>
+<script src="demo-flow.js?v=demo-1"></script>
 
 </body>
 </html>

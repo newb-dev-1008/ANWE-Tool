@@ -4,6 +4,8 @@ A local, human-supervised environmental decision-support prototype for the June 
 
 The central framework is **Design for Values**: Animal welfare, Ecological recovery, Transparency, Uncertainty and Accountability. The interactive matrix traces stakeholder concerns to norms, requirements, features and evaluation. Each pathway, AI assessment and PDF addresses the five values separately. See [DESIGN_FOR_VALUES.md](DESIGN_FOR_VALUES.md).
 
+The [ethical basis](ETHICAL_BASIS.md) gives animal welfare a modest, defeasible priority in closely balanced choices, with explicit consideration of human safety and essential needs. Pathways expose human objectives, animal interests, conflicts, alternatives, evidence gaps and safeguards. Human reviewers explain their decision; the app does not calculate an ethical score or automatically choose a winner.
+
 ## Installation
 
 Python 3.11 or later is recommended. From the repository directory:
@@ -29,13 +31,15 @@ Missing keys leave the associated service disabled, with no simulated answer or 
 
 ## Workflow
 
-1. Select the Culebra case in Case overview. Inspect the CEMS extent and its acquisition/publication dates. It is a generalised mapped observation, not an inferred final incident boundary. EFFIS historical geometry has not been obtained.
-2. In Ecological evidence, compare genuine pre/post Sentinel-2 tile quicklooks and source metadata. With CDSE credentials, explicitly run the paired raster analysis, inspect continuous NDVI/dNBR overlays and click the map to sample valid pixels. Catalogue thumbnails are not analysis rasters.
-3. In Biodiversity comparison, retrieve matched seasonal windows (default June 2021 / June 2023), choose a taxonomic group and set the outside buffer (0.5–20 km). Inspect burned-area, buffer and uncertain-location counts, species sets and date quality. Records are not a census or evidence of disappearance/recovery. Fire end is unverified; later observations may reflect the July fire.
-4. With an OpenAI key, select the case and ask the AI Ecological Assistant. Inspect source-backed facts separately from model hypotheses, unknowns and three conditional alternatives.
-5. Use the welfare, restoration comparison, Design for Values and evaluation tools. Guild/pathway assessments are authored hypotheses. Inspect four welfare dimensions and the five-value assessment inside each option; no overall ethical score is produced.
-6. Record a draft, deferred decision or locally reviewed decision. Reviewed status requires reviewer, date, preferred option, justification and explicit human confirmation; editing invalidates confirmation. Qualifications are unverified and external approvals remain necessary. Save in this browser.
-7. Open Report and choose Download PDF Report for an A4 assessment with map, evidence, temporal comparison, values, options, actual session AI draft, review and sources. Personal review details and private notes are omitted by default from PDF/JSON/text; select explicit inclusion options when appropriate. AI questions/drafts are included. Restarting the server clears validated AI sessions; ask again before including an old draft in a PDF.
+The default interface is Tierra del Fuego's three-step demo:
+
+1. **Understand the case:** read the animal-welfare principle and concise evidence summaries. The Culebra case is already selected. Historical comparison retrieval is optional.
+2. **Compare options:** compare possible effects on animals, human needs and required checks. Consider an option or continue undecided. No option wins automatically.
+3. **Explain and export:** state the human need, consequences of delay, animal safeguards and reasons. Save a local draft or defer, then download a PDF with explicit consent for private decision details.
+
+Maps, satellite processing, biodiversity dates/counts, AI, full ethical reasoning and qualified review remain under **Evidence & advanced tools**. Model calls and new processing are optional and explicit. The simple workflow requires neither. No current occupancy, welfare improvement, expert credentials or permission to act is inferred.
+
+Read [DEMO_GUIDE.md](DEMO_GUIDE.md) for the short demo, or [ADVANCED_GUIDE.md](ADVANCED_GUIDE.md) for detailed evidence and review workflows.
 
 ## Tests
 

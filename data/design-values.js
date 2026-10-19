@@ -122,10 +122,63 @@ const DFV = {
     }
   ],
   "tensions": [
+    "Forestry income versus animal habitat resources: investigate selective timber removal and deadwood retention; do not assume local occupancy.",
+    "Human access and livelihoods versus breeding disturbance: justify any spatial or temporary restrictions using evidence and alternatives.",
+    "Urgent human protection versus animal disturbance: document credible risk, necessity, mitigation and proportionality.",
     "Rapid restoration versus avoiding wildlife disturbance: investigate breeding and refuge use before scheduling work.",
     "Detailed biodiversity evidence versus protecting sensitive locations: retain aggregate evidence while withholding coordinates.",
     "Simple recommendations versus communicating uncertainty: provide concise options and expandable limitations, not a single ethical score.",
     "AI convenience versus expert accountability: retain human justification and approval requirements even when a model suggests an option."
-  ]
+  ],
+  "ethicalPosition": {
+    "title": "Animal-focused ethics with a modest welfare priority",
+    "foundation": "Sentient animals have welfare interests that matter independently of their usefulness to humans. Human restoration decisions create responsibilities to consider those interests. Ecological recovery matters, but vegetation or biodiversity gains do not by themselves establish better individual welfare.",
+    "justification": "This animal-welfare project gives animal interests modest additional consideration because animals bear consequences without representing themselves in land-use decisions. This is a stated normative commitment, not a conclusion measured by the ecological data.",
+    "decisionRule": "When feasible options remain closely balanced after considering evidence, severity, likelihood, duration, reversibility and affected interests, favour the option with lower credible risk of animal harm. Do not assign a numerical ethical score or automatically select a pathway.",
+    "limits": "Human safety, essential livelihoods and other serious human needs require explicit consideration. A credible urgent threat can justify proportionate intervention with mitigation and monitoring. Commercial convenience alone is not sufficient to dismiss credible severe avoidable animal harm. Neither animals nor humans always win.",
+    "uncertainty": "Missing observations do not establish absence or harm. Consider plausible animal risks cautiously without inventing occupancy, sentience or suffering. Prefer reversible measures, proportionate surveys or deferral when safe; uncertainty must not prevent necessary urgent protective action.",
+    "reviewPrompt": "Record the human objective, affected animal interests, possible conflict, less harmful alternatives, missing evidence, safeguards, monitoring and reasons for the decision. If animal interests are outweighed, explain necessity and proportionality.",
+    "evidenceStatus": "Authored ethical position and investigation prompts; local effects and outcomes remain unverified.",
+    "references": [
+      {
+        "title": "Palmer (2010), Animal Ethics in Context",
+        "url": "https://cup.columbia.edu/book/animal-ethics-in-context/9780231503020/"
+      },
+      {
+        "title": "Jamieson (1998), Animal Liberation is an Environmental Ethic",
+        "url": "https://doi.org/10.3197/096327198129341465"
+      },
+      {
+        "title": "Capozzelli, Hecht and Halsey (2020), What is the value of wild animal welfare for restoration ecology?",
+        "url": "https://doi.org/10.1111/rec.13114"
+      }
+    ]
+  },
+  "tradeoffProfiles": {
+    "opt-A": {
+      "humanObjective": "Limit expenditure and disturbance while meeting access, livelihood and safety needs.",
+      "animalInterests": "Retain occupied cover, deadwood resources and movement routes where field evidence supports their use.",
+      "conflict": "Delaying work may retain habitat but can conflict with verified erosion, access or safety needs.",
+      "alternatives": "Compare monitoring and restricted work areas with selective, low-disturbance action where necessary.",
+      "missingEvidence": "Current animal use, regeneration capacity, erosion and the location and urgency of human risks are unknown.",
+      "safeguards": "Define survey triggers, proportionate monitoring and conditions that would justify targeted action."
+    },
+    "opt-B": {
+      "humanObjective": "Address a verified local problem while managing costs, access and forestry needs.",
+      "animalInterests": "Protect refuges, food resources, movement and breeding during targeted work.",
+      "conflict": "Deadwood removal or temporary access restrictions may affect habitat resources or impose costs on land users.",
+      "alternatives": "Investigate selective deadwood retention, smaller work areas and timing around verified animal use.",
+      "missingEvidence": "Local habitat use, breeding timing, severity of the management problem and livelihood costs need checking.",
+      "safeguards": "Record retained refuges, disturbance limits, access arrangements and stop-work triggers."
+    },
+    "opt-C": {
+      "humanObjective": "Restore a verified missing habitat function while considering budgets, deadlines and essential human needs.",
+      "animalInterests": "Avoid unnecessary displacement, injury and loss of open habitat, cover or breeding resources.",
+      "conflict": "Rapid planting, timber recovery or machinery may satisfy management objectives while disturbing animals using the site.",
+      "alternatives": "Compare natural regeneration, phased work, smaller machinery footprints and retention of habitat mosaics.",
+      "missingEvidence": "Intervention necessity, current animal use, less harmful options and costs of delay remain unverified.",
+      "safeguards": "Require justified scope and timing, refuge protection, monitoring and proportionate stopping criteria."
+    }
+  }
 };
 if (typeof module !== "undefined") module.exports = DFV;

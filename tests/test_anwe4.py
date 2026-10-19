@@ -127,6 +127,25 @@ class GroundedAITests(unittest.TestCase):
             for question in questions:self.assertEqual(assess(question,'version')['question'],question)
 
 class PDFTests(unittest.TestCase):
+    def test_ethical_policy_and_tradeoff_survive_report_privacy_defaults(self):
+        import pymupdf as fitz
+        from backend.values import pathway_tradeoff
+        policy=FOUNDATION['ethicalPosition']
+        self.assertIn('closely balanced',policy['decisionRule'])
+        self.assertIn('Human safety',policy['limits'])
+        self.assertIn('not a conclusion measured',policy['justification'])
+        profile=pathway_tradeoff({'id':'opt-A'});profile['conflict']='MUTATED'
+        self.assertNotEqual(FOUNDATION['tradeoffProfiles']['opt-A']['conflict'],'MUTATED')
+        for option_id in ['opt-A','opt-B','opt-C']:
+            self.assertEqual(set(pathway_tradeoff({'id':option_id})),{'humanObjective','animalInterests','conflict','alternatives','missingEvidence','safeguards'})
+        with fitz.open(stream=make_report(EvidenceStore().snapshot(),review={'rationale':'PRIVATE OVERRIDE'}),filetype='pdf') as doc:
+            text=' '.join(' '.join(p.get_text().split()) for p in doc)
+            self.assertIn('modest welfare priority',text)
+            self.assertIn('Human safety',text)
+            self.assertIn('Less harmful alternatives',text)
+            self.assertNotIn('PRIVATE OVERRIDE',text)
+            self.assertEqual([e[2] for e in doc.get_toc()[:7]],list(range(1,8)))
+
     def test_editorial_clarifications_preserve_original_model_response(self):
         import pymupdf as fitz
         from backend.report_data import clarified_ai_text, ai_editorial_corrections

@@ -1,5 +1,13 @@
 # Validation performed
 
+## Simplified three-step demo
+
+The guided interface uses three primary screens, with existing evidence and review tools behind optional navigation. All 38 Python and 15 Node tests pass. `tests/demo_flow_browser.py` exercises initial navigation, all three options, draft saving and restoration, human-need categories, default/consented PDF privacy and mobile navigation at 390 px. It verifies no model or satellite-processing requests are made. New decision fields appear in reports only with consent and are cleared with the rest of the review. `tests/browser_smoke.py` opens advanced navigation explicitly to retain coverage of the detailed workflow. Screenshots were checked at desktop and mobile sizes.
+
+## Animal-focused ethics and human–animal trade-offs
+
+The integration adds the shared normative position and structured prompts for all three pathways. Python checks verify report coverage, consent defaults, policy/profile consistency and no automatic authority. Node checks exercise the ethical-policy screen, all pathway fields, no automatic selection and escaped human rationale. The complete suite contains 38 Python and 14 Node tests. Browser checks verified the policy text, expanded pathway comparison, revised rationale prompt and mobile width without making an AI request. A real-evidence report was generated privately, with all six main sections retained on their original pages and full ethical reasoning in Appendix C. Existing published reports and presentation edits were not overwritten.
+
 ## ANWE 4.1 PDF redesign validation
 
 ### Completed live demo

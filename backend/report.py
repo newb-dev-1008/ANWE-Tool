@@ -2,7 +2,7 @@
 import io
 import json
 from .common import ROOT
-from .values import FOUNDATION
+from .values import FOUNDATION, pathway_tradeoff
 from .report_data import prepare_report, display_number, biodiversity_rows, species_rows, ZONES, clarified_ai_text, ai_editorial_corrections
 from .report_layout import Layout, WIDTH, study_map, occurrence_chart
 
@@ -83,10 +83,12 @@ def make_report(snapshot,answers=None,review=None,include_review=False,include_n
     l.table(['Compare','Natural regeneration','Assisted restoration','Active habitat restoration'],rows,[WIDTH*.19]+[WIDTH*.27]*3)
     l.sub('Shared field requirements — check once for all options')
     l.bullets(['Vegetation regeneration and soil erosion.','Habitat connectivity, shelter, food and breeding sites.','Sensitive/vulnerable taxa and effects of machinery or human disturbance.'])
-    l.add('A qualified ecologist must judge whether intervention is needed and proportionate. ANWE does not replace consent or environmental permissions.','small')
+    l.add('Human objectives, animal interests, conflicts and alternatives: Appendix C. A qualified ecologist must judge need and proportionality; consent and applicable permissions remain necessary.','small')
 
     l.heading('5. Design for Values Assessment')
     l.add('Five values guide the choice; none is reduced to an overall ethical score. This matrix describes design support and remaining evaluation, not verified ethical outcomes.')
+    ethic=FOUNDATION.get('ethicalPosition')
+    if ethic:l.note('Animal welfare priority',ethic['decisionRule']+' Human safety and essential needs still require consideration; any override needs reasons, safeguards and monitoring. Full ethical basis and trade-offs: Appendix C.')
     rows=[['Animal Welfare','Shelter, food, movement and breeding habitat.','Considers potential animal harms in each option.','Current occupancy and site-specific impacts unknown.'],
           ['Ecological Recovery','Habitat function and regeneration.','Compares lighter and more intrusive options.','Field validation of need and recovery required.'],
           ['Transparency','Explainable reasoning and assumptions.','Links facts to source records and methods.','Source-backed numbers do not prove causal interpretations.'],
@@ -168,6 +170,15 @@ def make_report(snapshot,answers=None,review=None,include_review=False,include_n
     else:l.add('No comparison retrieved; no species lists or observation differences generated.')
 
     l.heading('Appendix C — Design for Values Traceability')
+    if ethic:
+        l.sub(ethic['title'])
+        for key in ['foundation','justification','decisionRule','limits','uncertainty','reviewPrompt','evidenceStatus']:l.add(ethic[key])
+        for ref in ethic['references']:l.story.append(l.link(ref['url'],ref['title']))
+        for option in options:
+            l.sub('Human–animal trade-off: '+option['name'])
+            labels={'humanObjective':'Human objective','animalInterests':'Animal interests','conflict':'Potential conflict','alternatives':'Less harmful alternatives','missingEvidence':'Missing evidence','safeguards':'Safeguards and monitoring'}
+            l.table(['Decision aspect','Conditional investigation prompt'],[[labels[k],v] for k,v in pathway_tradeoff(option).items()],[WIDTH*.27,WIDTH*.73])
+        l.add('The welfare priority is a normative commitment, not an automatic ranking or proof of site-specific effects. Human rationale is included only with export consent.')
     l.add('Stakeholder concern → Value → Norm → Requirement → Feature → Evaluation. The chain describes how the application was designed, not verified ecological outcomes.')
     for value in FOUNDATION['values']:
         l.sub(value['value']);l.table(['Chain element','Project specification'],[[key,value[field]] for key,field in [('Stakeholder concern','concern'),('Norm','norm'),('Requirement','requirement'),('Feature','feature'),('Evaluation','evaluation')]],[WIDTH*.24,WIDTH*.76])
@@ -212,6 +223,12 @@ def make_report(snapshot,answers=None,review=None,include_review=False,include_n
     if data['review']:
         l.heading('Appendix G — Consented Human Review')
         l.add(status['label']+'. Identity and qualifications are unverified; no action authorised.')
+        needs={'safety':'Safety and basic needs','livelihood':'Livelihoods and essential services','preference':'Preferences and convenience','unknown':'Not established yet'}
+        if data['review'].get('humanNeed') or data['review'].get('animalSafeguards'):
+            l.sub('Human needs and animal safeguards')
+            l.add('User-stated category: '+needs.get(data['review'].get('humanNeedCategory'),'Not established yet')+'. This category is not independently verified.')
+            l.add('Who needs what and consequences of waiting: '+(data['review'].get('humanNeed') or 'Not recorded'))
+            l.add('Less harmful measures and safeguards: '+(data['review'].get('animalSafeguards') or 'Not recorded'))
         for key,label in [('reviewer','Reviewer'),('date','Review date'),('preferredOption','Preferred option'),('rationale','Justification'),('challengedItems','Challenges'),('overriddenAssessments','Overrides'),('unresolvedRisks','Unresolved risks'),('supportingEvidence','Supporting evidence')]:l.sub(label);l.add(data['review'].get(key) or 'Not recorded')
         if data['includeNotes']:l.sub('Additional notes — included with consent');l.add(data['review'].get('additionalNotes') or 'None')
     buffer=io.BytesIO();l.build(buffer);return buffer.getvalue()

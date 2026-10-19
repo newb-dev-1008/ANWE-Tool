@@ -20,7 +20,7 @@ function harness() {
     createElement(){return element('download')},body:{appendChild(){},removeChild(){}}},
     window:{innerWidth:1200}, localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value),removeItem:key=>storage.delete(key)},
     console, Blob, URL, AbortController, clearTimeout, setTimeout, requestAnimationFrame: fn=>fn(), confirm:()=>true});
-  for (const file of ['data/scenario.js','data/design-values.js','data/geography.js','data/providers.js','app.js','integrations.js','values.js','workspace.js','welfare-ai.js']) vm.runInContext(fs.readFileSync(file,'utf8'),context,{filename:file});
+  for (const file of ['data/scenario.js','data/design-values.js','data/geography.js','data/providers.js','app.js','integrations.js','values.js','workspace.js','welfare-ai.js','demo-flow.js']) vm.runInContext(fs.readFileSync(file,'utf8'),context,{filename:file});
   vm.runInContext('loadLiveData=async()=>{}',context);
   return {context,element,storage,run:code=>vm.runInContext(code,context)};
 }
@@ -145,6 +145,37 @@ test('five values cover each pathway and reviewed decisions require confirmation
   assert.equal(h.storage.size,0);
   h.run('STATE.expertRecord.preferredOption="Natural regeneration";STATE.expertRecord.approvalConfirmed=true;saveExpertRecord()');
   assert.equal(h.storage.size,1);assert.equal(h.run('reviewState().actionAuthorised'),false);
+});
+
+test('modest welfare priority exposes human needs and structured tradeoffs without selecting a winner',()=>{
+  const h=harness();h.run('renderValuesMatrix()');
+  const policy=h.element('values-tensions').innerHTML;
+  assert.match(policy,/closely balanced/);assert.match(policy,/Human safety/);
+  assert.match(policy,/not a conclusion measured/);
+  for(const option of scenario.recoveryPathways){
+    const html=h.run(`renderPathwayValues(SCENARIO.recoveryPathways.find(o=>o.id===${JSON.stringify(option.id)}))`);
+    for(const label of ['Human objective','Animal interests','Potential conflict','Less harmful alternatives','Missing evidence','Safeguards and monitoring','Human justification'])assert.ok(html.includes(label),label);
+  }
+  assert.equal(h.run('STATE.expertRecord.preferredOption'),'');
+  h.run('STATE.expertRecord.rationale="<script>PRIVATE</script>"');
+  assert.match(h.run('renderPathwayValues(SCENARIO.recoveryPathways[0])'),/&lt;script&gt;PRIVATE/);
+});
+
+test('guided draft handles human needs, deferral and storage without inventing expert approval',()=>{
+  const h=harness();
+  assert.equal(h.run('STATE.expertRecord.preferredOption'),'');
+  h.run('renderDemoOptions()');
+  const html=h.element('screen-demo-options').innerHTML;
+  assert.match(html,/No automatic winner/);assert.match(html,/For animals/);assert.match(html,/For people/);
+  h.run('STATE.expertRecord.rationale="Wait for a road safety inspection";STATE.expertRecord.humanNeedCategory="safety";STATE.expertRecord.humanNeed="PRIVATE NEED";STATE.expertRecord.animalSafeguards="PRIVATE SAFEGUARD"');
+  h.element('demo-status').value='deferred';h.run('saveDemoDecision()');
+  assert.equal(h.storage.size,1);assert.equal(h.run('STATE.expertRecord.reviewStatus'),'deferred');
+  assert.equal(h.run('STATE.expertRecord.approvalConfirmed'),false);
+  assert.doesNotMatch(h.run('restorationSummary(false,false)'),/PRIVATE NEED|PRIVATE SAFEGUARD/);
+  h.run('STATE.expertRecord.approvalConfirmed=true;STATE.expertRecord.reviewStatus="reviewed";updateDemoField("humanNeed","Changed")');
+  assert.equal(h.run('STATE.expertRecord.approvalConfirmed'),false);assert.equal(h.run('STATE.expertRecord.reviewStatus'),'draft');
+  h.context.localStorage.setItem=()=>{throw Error('storage unavailable')};h.run('saveDemoDecision()');
+  assert.match(h.element('demo-save-status').textContent,/storage is unavailable/);
 });
 
 test('default JSON and text exports withhold personal review details and private notes',async()=>{

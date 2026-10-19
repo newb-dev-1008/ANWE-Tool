@@ -5,6 +5,10 @@ from .common import ROOT, ServiceError
 FOUNDATION=json.loads((ROOT/'data/design-values.json').read_text(encoding='utf-8'))
 VALUE_NAMES=[v['value'] for v in FOUNDATION['values']]
 
+def pathway_tradeoff(option):
+    """Authored prompts only: no automatic recommendation or ecological prediction."""
+    return dict(FOUNDATION.get('tradeoffProfiles',{}).get(option['id'],{}))
+
 def review_status(review, version):
     if not isinstance(review,dict):review={}
     requested=review.get('reviewStatus','draft')

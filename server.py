@@ -22,7 +22,7 @@ from backend.report import make_report
 load_env()
 CSRF=secrets.token_urlsafe(32)
 STATIC={'index.html','style.css','app.js','workspace.js','integrations.js','data/scenario.js','data/geography.js','data/providers.js',
-        'vendor/leaflet.js','vendor/leaflet.css','welfare-ai.js','values.js','data/design-values.js','data/design-values.json'}
+        'vendor/leaflet.js','vendor/leaflet.css','welfare-ai.js','values.js','demo-flow.js','demo-flow.css','data/design-values.js','data/design-values.json'}
 IMPORT_LOCK=threading.Lock()
 
 class Handler(BaseHTTPRequestHandler):
