@@ -187,7 +187,10 @@ function renderAIAnswers() {
     }).join(' ');
     const links=[...new Map(sources.map(s=>[s.source,s])).values()].map(s=>sourceLink(s.url,s.source)).join(' · ');
     return `<article class="ai-turn plain-answer"><p class="user-question">${escapeHtml(turn.question)}</p>
+      ${turn.recommendation?`<p><strong>Primary suggestion for expert discussion: ${escapeHtml(turn.recommendation.pathway)}</strong></p><p>${escapeHtml(turn.recommendation.reason)}</p><p>Reconsider if: ${escapeHtml(turn.recommendation.changeCondition)}</p>`:''}
       <p>${escapeHtml(turn.summary || 'The available evidence supports investigation, with the limitations below.')}</p>
+      ${(turn.speciesPlans||[]).map(p=>`<p><strong>${escapeHtml(p.speciesName)} ? conditional habitat support:</strong> ${escapeHtml(p.habitatAction)} Check first: ${escapeHtml(p.fieldCheck)} Current need is unverified.</p>`).join('')}
+
       ${facts?`<p>${facts}</p>`:''}
       ${paragraphs(turn.hypotheses)}${paragraphs(turn.unknowns)}
       ${(turn.pathways || []).map(p=>`<p>For ${escapeHtml(p.name.toLowerCase())}, ${escapeHtml((p.benefits || []).join(' '))} ${escapeHtml((p.harms || []).join(' '))} ${escapeHtml(p.inappropriate)} ${escapeHtml((p.fieldChecks || []).join(' '))}</p>`).join('')}

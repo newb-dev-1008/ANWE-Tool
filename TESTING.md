@@ -66,3 +66,25 @@ A local installed Chrome browser was exercised through Python Playwright because
 ## Required credential-dependent validation
 
 After configuring local keys, restart the server and explicitly run one pre/post analysis. Check returned TIFF alignment, valid mask coverage, map overlays, sampled nulls/values and manifest dates against source metadata. Inspect seasonal/cloud limitations. Ask the configured model a source-backed question, then a missing-data question; verify factual IDs, draft separation, three alternatives and report export. Test provider authentication, quotas, refusal and timeout using a controlled account. Observe provider usage and local attempt caps. Do not call this completed live validation until those requests actually succeed.
+
+## Visible AI and regional context (20 October 2026)
+
+- Python unit suite: 41 passing; JavaScript workflow suite: 15 passing.
+- `python tests/ai_guidance_browser.py`: mock provider response verifies visible main-flow advice, explicit note-sharing consent and unchanged manual decision; no paid request. Requires local test server on port 8081.
+- `python tests/demo_flow_browser.py http://localhost:8081`: existing desktop/mobile, save/restore and PDF consent checks passed.
+- Live public check: twelve sampled taxon lookups returned through the GBIF/IUCN context loader. OpenStreetMap provider requests failed; unavailable state retained. No live OpenAI response tested in this change.
+- Human settlement distances are point-to-generalised-fire-footprint screening, not forest-distance or fire-risk modelling. Economic land use is not municipal employment/income data.
+
+## Gemini provider integration
+
+46 Python tests and 15 JavaScript tests pass. Provider tests cover Gemini request/schema mapping, actual model/response provenance, blocked and truncated output, missing keys, quota failure without paid fallback, and an assessment through the existing evidence validator. Tests use mock provider responses; live Gemini generation requires a locally configured key and has not been verified. Local `.env` selects Gemini; no credentials are served or committed.
+
+## Live failure fixes
+
+Google generation returned HTTP 404 for the old model despite metadata access succeeding. Switched to `gemini-3.5-flash-lite`; a real assessment passed server validation on its first attempt. Overpass failed; GeoNames fallback retrieved 104 regional populated-place records with distances to the mapped footprint, retaining source attribution and marking economic land use unavailable. Added filtering coverage for historical, foreign and out-of-window records. Provider HTTP errors now distinguish unavailable models, request rejection and service outages without forwarding remote bodies or credentials.
+
+Final live browser check passed with regional context loaded: real Gemini guidance displayed, human selection unchanged, no JavaScript errors. Increased the bounded output allowance from 1800 to 4000 tokens after a richer-context response was truncated. Final unit results: 47 Python and 15 JavaScript tests passed.
+
+## Primary recommendation and species-support cards
+
+48 Python and 15 JavaScript tests passed. Live Gemini browser check displayed exactly one primary next step, alternatives and a recorded-species habitat-support card. Human selection remained empty until an explicit choice. Desktop and 390px mobile rendering checked; no horizontal overflow or JavaScript errors. Validation rejects invented pathways, non-animal-record species references and duplicate taxa. Species names and observation links come from server-held records; current rehabilitation needs remain unverified.

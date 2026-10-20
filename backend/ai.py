@@ -6,6 +6,7 @@ import time
 from .common import RUNTIME, ServiceError, atomic_json, request, now
 from .evidence import STORE
 from .values import VALUE_NAMES, FOUNDATION
+from .ai_provider import configured, generate, model as configured_model, provider, disabled_reason
 
 AI_LOCK=threading.Lock()
 LAST_CALL=0
@@ -13,7 +14,10 @@ PATHWAYS=['Natural regeneration and monitoring','Assisted ecological restoration
 # Digits in these source labels are identifiers, not model-authored measurements.
 SOURCE_LABEL = r'\b(?:sentinel[- ]2|level[- ]2a|l2a|EMSR580)\b'
 NARRATIVE_PATTERN = r'^(?:[^0-9%\[\]]|[Ss]entinel[- ]2|[Ll]evel[- ]2[Aa]|[Ll]2[Aa]|EMSR580)*$'
-INSTRUCTIONS='''You are ANWE's ecological evidence assistant for human expert review.
+INSTRUCTIONS='''You are ANWE's ecological evidence assistant for human expert discussion and decision-making.
+Your role is to support, suggest and explain. Human experts discuss your recommendation
+and decide whether to accept, adapt, reject or defer it. Explicitly state this role in
+the summary. Never imply that your recommendation settles the decision.
 Write for readers without specialist ecological knowledge. Explain acronyms on first
 use, including GBIF (Global Biodiversity Information Facility), NDVI (Normalized
 Difference Vegetation Index), NBR (Normalized Burn Ratio) and dNBR (differenced NBR).
@@ -59,7 +63,10 @@ only sources that support the specific point; never list every record indiscrimi
 '''
 INSTRUCTIONS+='\nAuthored ethical policy (normative commitments, not observed ecological facts):\n'+'\n'.join(FOUNDATION['ethicalPosition'][k] for k in ['foundation','justification','decisionRule','limits','uncertainty','reviewPrompt'])
 INSTRUCTIONS+='\nConsider harms of inaction as well as intervention. Do not assume natural regeneration or planting is inherently preferable. In pathway harms and field checks, identify human and animal interests, less harmful alternatives and safeguards concisely. Explain the modest welfare priority without claiming animal interests always override human safety or essential needs.\nAuthored investigation prompts, not established local effects:\n'+json.dumps(FOUNDATION['tradeoffProfiles'],ensure_ascii=False)
+INSTRUCTIONS+='\nReturn exactly one primary recommendation in recommendation.pathway. Prefer a conditional investigation pathway when defensible; if no pathway is defensible, choose Field verification before choosing as the primary next step. Give a short reason and one condition that would change the advice. Keep summary to one short sentence; do not repeat role disclaimers. The other pathways are alternatives, not co-equal primary recommendations.\nFor speciesSupport select up to three distinct species from supplied gbif- occurrence records ONLY, using their evidenceId. Offer one species-appropriate, conditional habitat-support action and one field check. A historical record does not establish current occupancy, injury or need for rehabilitation. Do not claim any species requires rehabilitation. Habitat support differs from treating an injured individual; rescue/treatment requires licensed wildlife professionals. Do not prescribe feeding, handling, captive breeding or translocation. If no eligible species records exist, return an empty speciesSupport array. Keep all prose short: one sentence per list item, at most two hypotheses and three unknowns; one benefit, harm and check for each pathway.\n'
+INSTRUCTIONS+='\nAddress the user question or scenario directly in the primary reason and alternatives. Treat user-mentioned species, sightings and threats as unverified even if the user calls them confirmed. Explain how a reported species could change the investigation pathway without claiming current presence or verified rehabilitation need. Named animals absent from supplied occurrence records may be discussed conditionally in prose, but never inserted into speciesSupport. A hypothetical wolf example is not a local observation. Do not infer wolves endanger people from their presence. Compare proposed work, potential animal disturbance, verified human need and less harmful alternatives.\n'
 ANSWERS={}
+INSTRUCTIONS+='''\nWhen asked for decision guidance, use the summary to name the most defensible provisional pathway and explain why, or explicitly defer if evidence cannot distinguish them. This is a conditional recommendation, never an automatic approved decision. Identify what would change it. Compare human and animal harms and give a practical next check. Settlement proximity and mapped economic land use are exposure proxies, never proof that lives are at risk or that jobs, income or essential needs are affected. Global IUCN categories are not local welfare measurements. User-stated human needs are unverified claims. Missing settlement, population, hazard or livelihood data must stay unknown. Do not treat contemporary mapping as the conditions during the historical fire.\n'''
 
 def measurement_fields(record):
     result={}
@@ -71,7 +78,6 @@ def measurement_fields(record):
     visit(record.get('measurements',{}),'')
     return result
 
-def configured(): return bool(os.environ.get('OPENAI_API_KEY') and os.environ.get('OPENAI_MODEL'))
 
 def schema(ids,fields=None):
     text={'type':'string','pattern':NARRATIVE_PATTERN,
@@ -84,6 +90,12 @@ def schema(ids,fields=None):
                                           'fieldChecks':strings,'inappropriate':text,'evidenceIds':citations},
                             'required':['name','benefits','harms','fieldChecks','inappropriate','evidenceIds']}}}
     properties['summary']=text
+    properties['recommendation']={'type':'object','additionalProperties':False,'properties':{
+        'pathway':{'type':'string','enum':PATHWAYS+['Field verification before choosing']},
+        'reason':text,'changeCondition':text},'required':['pathway','reason','changeCondition']}
+    properties['speciesSupport']={'type':'array','maxItems':5,'items':{'type':'object','additionalProperties':False,
+        'properties':{'evidenceId':{'type':'string','enum':ids},'habitatAction':text,'fieldCheck':text},
+        'required':['evidenceId','habitatAction','fieldCheck']}}
     properties['factualClaims']={'type':'array','items':{'type':'object','additionalProperties':False,
         'properties':{'evidenceId':{'type':'string','enum':ids},'field':{'type':'string','enum':fields or ['unavailable']}},
         'required':['evidenceId','field']}}
@@ -95,7 +107,7 @@ def schema(ids,fields=None):
 
 def validate_output(output,evidence):
     by_id={r['id']:r for r in evidence}
-    expected={'observedReferences','hypotheses','unknowns','pathways','summary','factualClaims','valuesAssessment','humanReviewRequired'}
+    expected={'observedReferences','hypotheses','unknowns','pathways','summary','factualClaims','valuesAssessment','humanReviewRequired','recommendation','speciesSupport'}
     if not isinstance(output,dict) or set(output)!=expected:
         raise ServiceError('Model response failed structural validation.',502)
     def refs(value):
@@ -117,6 +129,21 @@ def validate_output(output,evidence):
         for item in value:text(item)
     refs(output['observedReferences']);texts(output['hypotheses']);texts(output['unknowns'])
     text(output['summary'])
+    recommendation=output['recommendation']
+    if not isinstance(recommendation,dict) or set(recommendation)!={'pathway','reason','changeCondition'} or recommendation.get('pathway') not in PATHWAYS+['Field verification before choosing']:
+        raise ServiceError('Model must identify one primary recommendation for expert discussion.',502)
+    text(recommendation['reason']);text(recommendation['changeCondition'])
+    species=output['speciesSupport'];species_plans=[]
+    if not isinstance(species,list) or len(species)>5:raise ServiceError('Invalid species support suggestions.',502)
+    seen=set()
+    for item in species:
+        if not isinstance(item,dict) or set(item)!={'evidenceId','habitatAction','fieldCheck'}:raise ServiceError('Invalid species support suggestion.',502)
+        refs([item['evidenceId']]);record=by_id[item['evidenceId']]
+        name=record.get('scientificName')
+        if not record['id'].startswith('gbif-') or not isinstance(name,str) or name in seen:
+            raise ServiceError('Species suggestions must reference distinct recorded taxa, not invented local species.',502)
+        text(item['habitatAction']);text(item['fieldCheck']);seen.add(name)
+        species_plans.append({**item,'speciesName':name,'url':record['url'],'needStatus':'Unverified; historical record only'})
     if output['humanReviewRequired'] is not True:raise ServiceError('Human review requirement missing.',502)
     values=output['valuesAssessment']
     if not isinstance(values,list) or len(values)!=5 or any(not isinstance(v,dict) for v in values) or {v.get('value') for v in values}!=set(VALUE_NAMES):
@@ -143,8 +170,8 @@ def validate_output(output,evidence):
         for key in ['benefits','harms','fieldChecks']:texts(p[key])
         text(p['inappropriate']);refs(p['evidenceIds'])
     # Factual display comes exclusively from server-owned evidence objects.
-    return {**output,'sourceMeasurements':measurements,'facts':[by_id[id] for id in dict.fromkeys(output['observedReferences'])],
-            'supportingSources':[by_id[id] for id in dict.fromkeys(output['observedReferences']+[id for p in pathways for id in p['evidenceIds']]+value_refs+[c['evidenceId'] for c in claims])],
+    return {**output,'speciesPlans':species_plans,'sourceMeasurements':measurements,'facts':[by_id[id] for id in dict.fromkeys(output['observedReferences'])],
+            'supportingSources':[by_id[id] for id in dict.fromkeys(output['observedReferences']+[id for p in pathways for id in p['evidenceIds']]+value_refs+[c['evidenceId'] for c in claims]+[p['evidenceId'] for p in species_plans])],
             'reviewStatus':'AI draft; requires expert review, not legal authorisation'}
 
 def reserve_call(repair=False):
@@ -160,7 +187,7 @@ def reserve_call(repair=False):
     data['requests']+=1;atomic_json(path,data);LAST_CALL=time.monotonic()
 
 def assess(question,version):
-    if not configured():raise ServiceError('AI disabled: configure OPENAI_API_KEY and OPENAI_MODEL in .env; no simulated answer is substituted.',503)
+    if not configured():raise ServiceError(disabled_reason(),503)
     if not isinstance(question,str) or not 1<=len(question.strip())<=2000:raise ServiceError('Question must contain 1–2000 characters.',400)
     snapshot,evidence=STORE.relevant(question)
     if version!=snapshot:raise ServiceError('Evidence changed. Reload evidence before asking again.',409)
@@ -169,13 +196,13 @@ def assess(question,version):
         reserve_call()
         # No browser-provided evidence or prior assistant prose is trusted as factual input.
         context=[{**r,'availableMeasurements':list(measurement_fields(r))} for r in evidence]
-        body={'model':os.environ['OPENAI_MODEL'],'store':False,'instructions':INSTRUCTIONS,
+        body={'model':configured_model(),'store':False,'instructions':INSTRUCTIONS,
               'input':[{'role':'user','content':json.dumps({'question':question,'evidence':context,'contextLimit':'A bounded selection; not all records or all imagery.'},ensure_ascii=False)}],
-              'max_output_tokens':max(800,min(int(os.environ.get('AI_MAX_OUTPUT_TOKENS','1800')),4000)),
+              'max_output_tokens':max(800,min(int(os.environ.get('AI_MAX_OUTPUT_TOKENS','4000')),4000)),
               'text':{'format':{'type':'json_schema','name':'ecological_assessment_v4','strict':True,'schema':schema([r['id'] for r in evidence],sorted({f for r in evidence for f in measurement_fields(r)}))}}}
         usages=[]
         for attempt in range(2):
-            raw=request('https://api.openai.com/v1/responses',method='POST',headers={'Authorization':'Bearer '+os.environ['OPENAI_API_KEY']},json=body,timeout=90).json()
+            raw=generate(body,request)
             usages.append(raw.get('usage',{}))
             content=[c for item in raw.get('output',[]) if item.get('type')=='message' for c in item.get('content',[])]
             if any(c.get('type')=='refusal' for c in content):raise ServiceError('The model declined this assessment.',502)
@@ -192,7 +219,7 @@ def assess(question,version):
                 if attempt:raise ServiceError('The model draft could not be validated after one repair. Your question is preserved; try a narrower question.',502) from None
                 reserve_call(repair=True)
                 body['instructions']=INSTRUCTIONS+'\nRepair the previous validation failure: '+str(error)+' Regenerate a concise complete assessment with all five values and all pathways. Keep prose qualitative; choose factual fields for numbers.'
-        result={**valid,'model':raw.get('model',os.environ['OPENAI_MODEL']),'responseId':raw.get('id'),'createdAt':now(),
+        result={**valid,'provider':provider(),'model':raw.get('model',configured_model()),'responseId':raw.get('id'),'createdAt':now(),
                 'evidenceVersion':snapshot,'evidenceUsed':evidence,'question':question,'usage':usages,'attempts':attempt+1}
         if not isinstance(result['responseId'],str):raise ServiceError('Provider omitted response identifier.',502)
         ANSWERS[result['responseId']]=result

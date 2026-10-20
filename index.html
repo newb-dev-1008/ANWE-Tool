@@ -10,7 +10,7 @@
   <meta property="og:description" content="Documented Culebra wildfire, ecological evidence, AI drafts and human oversight. Academic prototype." />
   <link rel="stylesheet" href="vendor/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="demo-flow.css?v=demo-1" />
+  <link rel="stylesheet" href="demo-flow.css?v=demo-case-8" />
   <!-- Inline critical warning style so it renders even if CSS fails -->
   <style>
     .global-banner {
@@ -43,6 +43,13 @@
       <p>Restoration with animals in mind</p>
     </div>
 
+    <div class="sidebar-case-picker">
+      <label for="demo-fire-case">Forest fire</label>
+      <select id="demo-fire-case" aria-describedby="demo-case-note">
+        <option value="culebra-june-2022" selected>Sierra de la Culebra · June 2022</option>
+      </select>
+      <p id="demo-case-note">Zamora, Spain · One case available in this demo</p>
+    </div>
     <nav class="sidebar-nav" aria-label="Screen navigation">
       <button class="nav-item" id="nav-demo-start" onclick="openDemoStep('demo-start')"><span class="demo-step-number">1</span> Understand the case</button>
       <button class="nav-item" id="nav-demo-options" onclick="openDemoStep('demo-options')"><span class="demo-step-number">2</span> Compare options</button>
@@ -353,7 +360,7 @@
         <h1 id="ai-heading">AI Ecological Assistant</h1><p>Model-generated interpretations are drafts. Source facts are reproduced from server-owned evidence; all ecological implications require expert review.</p>
         <p id="ai-selection-notice" class="callout callout-info">Select the Culebra case in Explore wildfire before asking.</p><p id="ai-status" role="status">Checking model configuration…</p>
         <form id="ai-question-form" onsubmit="askAssistant(event)"><label for="ai-question">Question about the selected case</label><textarea id="ai-question" maxlength="2000" rows="3" required placeholder="What evidence would an ecologist need before choosing regeneration or planting?"></textarea><button id="ask-ai" class="btn btn-primary" type="submit" disabled>Ask configured model</button></form>
-        <p class="provenance">Only your question and a bounded selection of source records are sent to OpenAI when you click Ask. Reviewer names and private notes are not included. Requests and output size are capped.</p><div id="ai-conversation" aria-live="polite"></div>
+        <p class="provenance">Your question and a bounded selection of source records are sent to the configured AI provider when you click Ask. Do not include confidential information. Requests and output size are capped. AI suggests; human experts discuss and decide.</p><div id="ai-conversation" aria-live="polite"></div>
       </section>
       <section id="screen-restoration-summary" class="screen" aria-labelledby="summary-heading">
         <h1 id="summary-heading">Restoration assessment report</h1>
@@ -393,7 +400,7 @@
   <script src="values.js?v=welfare-priority-1"></script>
 <script src="workspace.js"></script>
 <script src="welfare-ai.js"></script>
-<script src="demo-flow.js?v=demo-1"></script>
+<script src="demo-flow.js?v=demo-case-8"></script>
 
 </body>
 </html>

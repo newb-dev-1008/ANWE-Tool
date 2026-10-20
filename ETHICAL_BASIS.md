@@ -43,3 +43,7 @@ Design for Values operationalises this ethical commitment through norms, require
 - [Capozzelli, Hecht and Halsey (2020), What is the value of wild animal welfare for restoration ecology?](https://doi.org/10.1111/rec.13114): ecosystem processes and individual welfare can align or conflict.
 
 These sources inform the project. They do not establish a universally accepted priority ordering or validate this prototype's ecological outcomes.
+
+## AI supports; human experts decide
+
+AI suggests a possible restoration approach and explains the evidence, trade-offs and uncertainties. Human experts discuss that suggestion and decide whether to accept, adapt or reject it, or collect more evidence. The recorded decision and its justification belong to the human reviewers. AI does not select an option automatically or authorise restoration work.

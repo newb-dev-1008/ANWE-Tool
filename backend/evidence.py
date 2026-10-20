@@ -21,9 +21,11 @@ class EvidenceStore:
     def put(self,source,data):
         with self.lock:
             self.sources[source]=data
-            prefix={'gbif':'gbif-','satellite':'sentinel-','analysis':'analysis-','comparison':'comparison-'}.get(source)
+            prefix={'gbif':'gbif-','satellite':'sentinel-','analysis':'analysis-','comparison':'comparison-','context':'context-'}.get(source)
             if prefix: self.records={k:v for k,v in self.records.items() if not k.startswith(prefix)}
             if source=='gbif':
+                for r in data.get('records',[]): self.records[r['id']]=r
+            if source=='context':
                 for r in data.get('records',[]): self.records[r['id']]=r
             if source=='satellite':
                 for image in data.get('images',[]):

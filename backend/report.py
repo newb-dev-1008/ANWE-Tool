@@ -122,6 +122,14 @@ def make_report(snapshot,answers=None,review=None,include_review=False,include_n
         corrections=ai_editorial_corrections(ai)
         if corrections:l.add('Editorial clarifications distinguish historical observations from current presence and remove an unsupported regeneration-rate inference. Original affected wording is retained, explicitly superseded, in Appendix F. This is not expert ecological approval.','small')
         l.note('Interpretation — excerpt',excerpt(clarified_ai_text(ai.get('summary','No summary supplied.')),850))
+        if ai.get('recommendation'):
+            rec=ai['recommendation'];l.note('Primary AI suggestion for human discussion',rec['pathway']+'. '+rec['reason'])
+            l.add('Reconsider if: '+rec['changeCondition'],'small')
+        if ai.get('speciesPlans'):
+            l.sub('Species to assess: conditional habitat support')
+            l.add('Historical records do not establish a need for rehabilitation. Injured animals require qualified wildlife professionals.','small')
+            for plan in ai['speciesPlans']:
+                l.note(plan['speciesName'],plan['habitatAction']+' Field check: '+plan['fieldCheck'])
         l.sub('Selected uncertainties')
         l.bullets([excerpt(t,250) for t in ai.get('unknowns',[])[:3]])
         l.sub('Supporting evidence and assumptions')
@@ -193,6 +201,23 @@ def make_report(snapshot,answers=None,review=None,include_review=False,include_n
     for source in data['sources']:
         l.sub(source['source']);l.add('Dataset/source ID: '+source['datasetId']+' | Observation/retrieval date: '+source['date'],'small')
         l.story.append(l.link(source['url']));l.add('Method: '+source['method'],'small');l.add('Limitations: '+source['limitations'],'small');l.add('Reuse: '+str(source.get('license','Check source terms')),'small')
+    context=snapshot.get('sources',{}).get('context')
+    if context:
+        l.sub('Regional human and conservation context')
+        l.add(context['limitations'],'small')
+        settlements=context.get('settlements',{})
+        if settlements.get('status')=='available':
+            l.table(['Mapped settlement point','Distance to mapped footprint (km)'],[[p['name'],str(p['distanceKm'])] for p in settlements.get('settlements',[])[:10]],[WIDTH*.65,WIDTH*.35],small=True)
+            l.add('Land-use feature counts (not area, jobs or income): '+str(settlements.get('landUseFeatureCounts',{})),'small')
+        else:l.add('Settlement mapping unavailable; no substitute exposure estimate.','small')
+        conservation=context.get('conservation',{})
+        if conservation.get('status')=='available':
+            l.add(conservation['limitations'],'small')
+            for record in conservation.get('records',[]):
+                assessment=record.get('assessment',{})
+                category=assessment.get('category','Unknown') if isinstance(assessment,dict) else str(assessment)
+                l.add(record['taxon']+': '+category,'small')
+        else:l.add('Conservation lookup unavailable.','small')
     if b:
         datasets={r['datasetId']:(r['provider'],r['license']) for r in b['records']}
         l.sub('GBIF contributing datasets')

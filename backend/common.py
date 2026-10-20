@@ -35,6 +35,12 @@ def request(url, *, method='GET', timeout=30, **kwargs):
             raise ServiceError('Source rate limit reached. Try again later.', 429)
         if response.status_code in (401, 403):
             raise ServiceError('Source authentication or access denied.', 503)
+        if response.status_code==404:
+            raise ServiceError('The requested source or AI model is unavailable (HTTP 404). Check the configured model or dataset.',502)
+        if response.status_code==400:
+            raise ServiceError('The provider rejected the request format or configuration (HTTP 400).',502)
+        if response.status_code>=500:
+            raise ServiceError('The external provider is temporarily unavailable (HTTP '+str(response.status_code)+'). Try again later.',503)
         response.raise_for_status()
         return response
     except requests.RequestException:

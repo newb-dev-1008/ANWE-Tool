@@ -117,13 +117,13 @@ class GroundedAITests(unittest.TestCase):
         responses=[{'status':'completed','id':'fixture-failed','output':[{'type':'message','content':[{'type':'output_text','text':json.dumps(invalid)}]}]},
                    {'status':'completed','id':'fixture-repaired','output':[{'type':'message','content':[{'type':'output_text','text':json.dumps(valid_answer())}]}]}]
         remote=Mock();remote.json.side_effect=responses
-        with tempfile.TemporaryDirectory() as directory,patch('backend.ai.RUNTIME',Path(directory)),patch('backend.ai.configured',return_value=True),patch.dict('os.environ',{'OPENAI_API_KEY':'fixture-key','OPENAI_MODEL':'fixture-model'}),patch('backend.ai.STORE.relevant',return_value=('version',[FIRE_EVIDENCE])),patch('backend.ai.reserve_call') as budget,patch('backend.ai.request',return_value=remote) as call:
+        with tempfile.TemporaryDirectory() as directory,patch('backend.ai.RUNTIME',Path(directory)),patch('backend.ai.configured',return_value=True),patch.dict('os.environ',{'AI_PROVIDER':'openai','OPENAI_API_KEY':'fixture-key','OPENAI_MODEL':'fixture-model'}),patch('backend.ai.STORE.relevant',return_value=('version',[FIRE_EVIDENCE])),patch('backend.ai.reserve_call') as budget,patch('backend.ai.request',return_value=remote) as call:
             answer=assess('Fixture question','version');self.assertEqual(answer['attempts'],2);self.assertEqual(call.call_count,2);self.assertEqual(budget.call_count,2)
             log=(Path(directory)/'ai-validation.jsonl').read_text();self.assertNotIn('fixture-key',log);self.assertNotIn('Fixture question',log);self.assertNotIn('made-up',log)
     def test_demo_questions_validate_with_explicit_mock(self):
         questions=['What evidence is available about the Sierra de la Culebra wildfire?','Which species were recorded before and after the fire?','What does the change in GBIF observations tell us?','What remains uncertain?','What are the possible animal welfare impacts of replanting?','What restoration pathway appears appropriate to investigate?','How do the five ANWE values affect this decision?']
         remote=Mock();remote.json.return_value={'status':'completed','id':'fixture-seven','output':[{'type':'message','content':[{'type':'output_text','text':json.dumps(valid_answer())}]}]}
-        with patch('backend.ai.configured',return_value=True),patch.dict('os.environ',{'OPENAI_API_KEY':'fixture-key','OPENAI_MODEL':'fixture-model'}),patch('backend.ai.STORE.relevant',return_value=('version',[FIRE_EVIDENCE])),patch('backend.ai.reserve_call'),patch('backend.ai.request',return_value=remote):
+        with patch('backend.ai.configured',return_value=True),patch.dict('os.environ',{'AI_PROVIDER':'openai','OPENAI_API_KEY':'fixture-key','OPENAI_MODEL':'fixture-model'}),patch('backend.ai.STORE.relevant',return_value=('version',[FIRE_EVIDENCE])),patch('backend.ai.reserve_call'),patch('backend.ai.request',return_value=remote):
             for question in questions:self.assertEqual(assess(question,'version')['question'],question)
 
 class PDFTests(unittest.TestCase):

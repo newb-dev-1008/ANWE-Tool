@@ -15,11 +15,16 @@ with sync_playwright() as p:
     page.goto(url);page.wait_for_selector('#screen-demo-start.active')
     assert not page.locator('.advanced-nav').get_attribute('open')
     assert page.locator('.sidebar-nav > button').count()==3
+    assert page.locator('#start-fire-case option').count()==1
+    assert page.locator('#start-fire-case').is_visible()
+    assert page.locator('#demo-fire-case option').count()==1
+    assert page.locator('#demo-fire-case').input_value()=='culebra-june-2022'
     page.screenshot(path=str(out/'01-case.png'),full_page=True,animations='disabled')
     page.locator('#nav-demo-options').click()
     assert page.locator('.demo-option').count()==3
     assert page.evaluate('STATE.expertRecord.preferredOption')==''
     page.screenshot(path=str(out/'02-options.png'),full_page=True,animations='disabled')
+    page.locator('#demo-authored-options > summary').click()
     page.locator('.demo-option .btn').nth(1).click()
     assert page.locator('#demo-option').input_value()=='Assisted ecological restoration'
     page.select_option('#demo-human-category','safety')

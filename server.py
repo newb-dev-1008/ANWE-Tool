@@ -11,10 +11,12 @@ from backend.common import ROOT, RUNTIME, ServiceError, load_env, atomic_json, r
 from backend.case import CASE
 from backend.fire import fire_status, validate_import
 from backend.biodiversity import load_biodiversity
+from backend.context import load_context
 from backend.satellite import catalogue, run_analysis, sample, cached_analyses, configured as satellite_configured
 from backend.evidence import STORE
 from backend.ai import assess, configured as ai_configured
 from backend.ai import ANSWERS
+from backend.ai_provider import provider as ai_provider, model as ai_model, disabled_reason as ai_disabled_reason
 from backend.comparison import load_comparison
 from backend.values import FOUNDATION
 from backend.report import make_report
@@ -66,11 +68,13 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if path=='/api/status':
                 return self.send(200,{'case':CASE,'csrfToken':CSRF,
-                    'ai':{'enabled':ai_configured(),'model':os.environ.get('OPENAI_MODEL') if ai_configured() else None,
-                          'reason':None if ai_configured() else 'Configure OPENAI_API_KEY and OPENAI_MODEL in .env; no fake AI fallback.'},
+                    'ai':{'enabled':ai_configured(),'provider':ai_provider(),'model':ai_model() if ai_configured() else None,
+                          'reason':None if ai_configured() else ai_disabled_reason()},
                     'satellite':{'processingEnabled':satellite_configured(),'reason':None if satellite_configured() else 'Configure CDSE_CLIENT_ID and CDSE_CLIENT_SECRET for reflectance processing. Public catalogue and quicklooks remain available.'},
                     'fire':fire_status()})
             if path=='/api/evidence':return self.send(200,STORE.snapshot())
+            if path=='/api/context':
+                data=load_context();STORE.put('context',data);return self.send(200,data)
             if path=='/api/values':return self.send(200,FOUNDATION)
             if path=='/api/satellite/analyses':
                 analyses=cached_analyses()

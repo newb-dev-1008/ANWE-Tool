@@ -31,7 +31,7 @@ def prepare_report(snapshot,answers=None,review=None,include_review=False,includ
     scenario=json.loads(text[text.index('{'):text.rindex('\n};')+2])
     sources=snapshot.get('sources',{})
     answer=(answers or [])[-1] if answers else None
-    used={r['id']:r for r in snapshot.get('records',[]) if r['id'].startswith(('cems-','analysis-','comparison-'))}
+    used={r['id']:r for r in snapshot.get('records',[]) if r['id'].startswith(('cems-','analysis-','comparison-','context-'))}
     for response in answers or []:
         for source in response.get('supportingSources',[]):used[source['id']]=source
     return {'snapshot':snapshot,'analysis':sources.get('analysis'),'comparison':sources.get('comparison'),

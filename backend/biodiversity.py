@@ -26,7 +26,7 @@ def normalise_occurrence(record, dataset):
         'id': f'gbif-{key}', 'kind': 'Observed', 'source': 'GBIF occurrence index',
         'datasetId': record.get('datasetKey', 'Unknown'), 'date': date,
         'coverage': CASE['coverageLabel'],
-        'scientificName': str(name)[:200], 'commonName': None,
+        'scientificName': str(name)[:200], 'commonName': None, 'taxonKey':record.get('speciesKey') or record.get('taxonKey'),
         'class': record.get('class', 'Unclassified'),
         'provider': dataset.get('title') or record.get('datasetName') or 'Provider not supplied',
         'license': record.get('license') or dataset.get('license') or 'Check source record terms',
@@ -64,4 +64,4 @@ def load_biodiversity():
         return {'status':'available','retrievedAt':now(),'records':records,'countsByClass':totals,
                 'scope':CASE['coverageLabel'], 'sampling':'Up to 15 indexed records per class; not a census or native-species inventory.',
                 'limitations':'No precise coordinates disclosed. All records cover the regional search window, not a verified burned perimeter.'}
-    return CACHE.get('culebra-gbif-v4',load,86400)
+    return CACHE.get('culebra-gbif-v5',load,86400)
